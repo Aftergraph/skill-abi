@@ -9,6 +9,7 @@ from pathlib import Path
 
 from sabi import schema as json_schema
 from sabi import vocab
+from sabi.effects import validate_envelope
 from sabi.errors import ValidationError
 from sabi.parser import load_manifest, parse_abi_yaml
 from sabi.lockfile import check_lock
@@ -115,7 +116,9 @@ def validate_skill(skill_dir, schemas_dir=None, write_lock=False):
     for name, spec in effects.items():
         if not isinstance(spec, dict) or not spec:
             errors.append(f"P2: effect {name!r} must be a quantified mapping")
-    creds = effects.get("credentials", {})
+    for msg in validate_envelope(effects):
+        errors.append(f"P2: effects envelope: {msg}")
+    creds = effects.get("credential", effects.get("credentials", {}))
     if isinstance(creds, dict) and creds.get("expose_to_model") is not False:
         errors.append("P2: credentials.expose_to_model must be explicitly false")
     if schemas_dir is not None:

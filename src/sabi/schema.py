@@ -109,6 +109,12 @@ def validate(instance, schema, root=None, path=""):
 
     # object constraints
     if isinstance(instance, dict):
+        if "minProperties" in schema and len(instance) < schema["minProperties"]:
+            errors.append(
+                f"{path}: object has {len(instance)} properties < minProperties {schema['minProperties']}")
+        if "maxProperties" in schema and len(instance) > schema["maxProperties"]:
+            errors.append(
+                f"{path}: object has {len(instance)} properties > maxProperties {schema['maxProperties']}")
         if "required" in schema:
             for key in schema["required"]:
                 if key not in instance:

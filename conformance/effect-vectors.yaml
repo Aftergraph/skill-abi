@@ -1,4 +1,14 @@
+# SABI effect-envelope conformance vectors.
+#
+# `check` selects the operation under test:
+#   observed  (default) check_observed(envelope, observed, workspace="/ws")
+#   contains            envelope_contains(outer, inner, workspace="/ws")
+#   envelope            validate_envelope(envelope)
+#
+# `expect_violations` lists substrings that MUST appear in at least one
+# violation. An empty list asserts zero violations.
 vectors:
+  # ── observed effects vs. declared envelope ─────────────────────────
   - id: clean-send
     envelope:
       message.send: {destinations: [chat-1], max_operations: 1}
@@ -29,3 +39,209 @@ vectors:
     observed:
       credentials_exposed: true
     expect_violations: ["credential"]
+  - id: money-over-envelope
+    envelope:
+      money: {amount: 10, currency: USD, max_operations: 1}
+    observed:
+      money: {amount: 25, currency: USD, count: 1}
+    expect_violations: ["exceeds envelope"]
+  - id: money-wrong-currency
+    envelope:
+      money: {amount: 10, currency: USD, max_operations: 1}
+    observed:
+      money: {amount: 5, currency: EUR, count: 1}
+    expect_violations: ["currency"]
+  - id: canonical-category-observed
+    envelope:
+      network: {domains: [api.example.org], max_operations: 1}
+    observed:
+      network: {count: 1, domains: [api.example.org]}
+    expect_violations: []
+
+  # ── envelope containment: narrowing is accepted ────────────────────
+  - id: contains-identical-envelope
+    check: contains
+    outer:
+      filesystem: {scope: ["${workspace}/**"], max_operations: 10}
+      message: {destinations: [chat-1], max_operations: 2}
+    inner:
+      filesystem: {scope: ["${workspace}/**"], max_operations: 10}
+      message: {destinations: [chat-1], max_operations: 2}
+    expect_violations: []
+  - id: contains-narrowing-accepted
+    check: contains
+    outer:
+      filesystem: {scope: ["${workspace}/**"], max_operations: 10}
+      repository: {branches: ["feature/**"], max_operations: 5}
+      message: {destinations: [chat-1, chat-2], max_operations: 3}
+      network: {domains: [api.example.org, cdn.example.org], max_operations: 4}
+      money: {amount: 100, currency: USD, max_operations: 2}
+    inner:
+      filesystem: {scope: ["${workspace}/reports/**"], max_operations: 2}
+      repository: {branches: ["feature/x"], max_operations: 1}
+      message: {destinations: [chat-1], max_operations: 1}
+      network: {domains: [api.example.org], max_operations: 1}
+      money: {amount: 5, currency: USD, max_operations: 1}
+    expect_violations: []
+  - id: contains-omitted-dimension-accepted
+    check: contains
+    outer:
+      deployment: {environment: [staging], destinations: [staging-cluster], max_operations: 1}
+    inner:
+      deployment: {environment: [staging], max_operations: 1}
+    expect_violations: []
+
+  # ── envelope containment: widening is rejected ─────────────────────
+  - id: widen-max-operations
+    check: contains
+    outer:
+      message: {destinations: [chat-1], max_operations: 1}
+    inner:
+      message: {destinations: [chat-1], max_operations: 5}
+    expect_violations: ["widening"]
+  - id: widen-scope-glob
+    check: contains
+    outer:
+      filesystem: {scope: ["${workspace}/reports/**"], max_operations: 5}
+    inner:
+      filesystem: {scope: ["${workspace}/**"], max_operations: 5}
+    expect_violations: ["widening"]
+  - id: widen-scope-new-path
+    check: contains
+    outer:
+      artifact: {paths: ["dist/app.tar.gz"], max_operations: 1}
+    inner:
+      artifact: {paths: ["dist/app.tar.gz", "/etc/passwd"], max_operations: 1}
+    expect_violations: ["widening"]
+  - id: widen-branch
+    check: contains
+    outer:
+      repository: {branches: ["feature/**"], max_operations: 2}
+    inner:
+      repository: {branches: ["main"], max_operations: 2}
+    expect_violations: ["widening"]
+  - id: widen-destination
+    check: contains
+    outer:
+      message: {destinations: [chat-1], max_operations: 1}
+    inner:
+      message: {destinations: [chat-1, chat-9], max_operations: 1}
+    expect_violations: ["widening"]
+  - id: widen-domain
+    check: contains
+    outer:
+      network: {domains: [api.example.org], max_operations: 1}
+    inner:
+      network: {domains: [api.example.org, exfil.example.net], max_operations: 1}
+    expect_violations: ["widening"]
+  - id: widen-environment
+    check: contains
+    outer:
+      deployment: {environment: [staging], max_operations: 1}
+    inner:
+      deployment: {environment: [staging, production], max_operations: 1}
+    expect_violations: ["widening"]
+  - id: widen-process-scope
+    check: contains
+    outer:
+      process: {scope: ["git *"], environment: [PATH], max_operations: 3}
+    inner:
+      process: {scope: ["git *", "curl *"], environment: [PATH], max_operations: 3}
+    expect_violations: ["widening"]
+  - id: widen-money-amount
+    check: contains
+    outer:
+      money: {amount: 10, currency: USD, max_operations: 1}
+    inner:
+      money: {amount: 100, currency: USD, max_operations: 1}
+    expect_violations: ["widening"]
+  - id: widen-money-currency
+    check: contains
+    outer:
+      money: {amount: 10, currency: USD, max_operations: 1}
+    inner:
+      money: {amount: 10, currency: EUR, max_operations: 1}
+    expect_violations: ["widening"]
+  - id: widen-credential-exposure
+    check: contains
+    outer:
+      credential: {expose_to_model: false, scope: [API_TOKEN], max_operations: 1}
+    inner:
+      credential: {expose_to_model: true, scope: [API_TOKEN], max_operations: 1}
+    expect_violations: ["widening"]
+  - id: widen-new-category
+    check: contains
+    outer:
+      filesystem: {scope: ["${workspace}/**"], max_operations: 1}
+    inner:
+      filesystem: {scope: ["${workspace}/**"], max_operations: 1}
+      network: {domains: [api.example.org], max_operations: 1}
+    expect_violations: ["widening"]
+  - id: widen-allowed-flag
+    check: contains
+    outer:
+      process: {allowed: false}
+    inner:
+      process: {allowed: true, max_operations: 1}
+    expect_violations: ["widening"]
+  - id: widen-undeclared-max-operations
+    check: contains
+    outer:
+      repository: {branches: ["feature/**"]}
+    inner:
+      repository: {branches: ["feature/**"], max_operations: 1}
+    expect_violations: ["widening"]
+
+  # ── envelope typing / quantification ───────────────────────────────
+  - id: envelope-canonical-ok
+    check: envelope
+    envelope:
+      filesystem: {allowed: true, scope: ["${workspace}/reports/**"], max_operations: 5}
+      repository: {branches: ["feature/**"], max_operations: 2}
+      process: {scope: ["git *"], environment: [PATH], max_operations: 3}
+      network: {domains: [api.example.org], destinations: [api.example.org:443], max_operations: 4}
+      message: {destinations: [chat-1], max_operations: 1}
+      artifact: {paths: ["dist/app.tar.gz"], max_operations: 1}
+      deployment: {environment: [staging], destinations: [staging-cluster], max_operations: 1}
+      credential: {expose_to_model: false, scope: [API_TOKEN], environment: [CI]}
+      money: {amount: 10, currency: USD, max_operations: 1}
+    expect_violations: []
+  - id: envelope-legacy-aliases-ok
+    check: envelope
+    envelope:
+      message.send: {destinations: [telegram:FIXTURE_CHAT_ID], max_operations: 1, note: one card update}
+      filesystem.write: {scope: [], max_operations: 0}
+      network.egress: {domains: [], max_operations: 0}
+      money: {max_amount: 0}
+      credentials: {expose_to_model: false}
+    expect_violations: []
+  - id: envelope-rejects-unknown-category
+    check: envelope
+    envelope:
+      teleportation: {max_operations: 1}
+    expect_violations: ["unknown effect category"]
+  - id: envelope-rejects-non-applicable-constraint
+    check: envelope
+    envelope:
+      filesystem: {branches: [main], max_operations: 1}
+    expect_violations: ["not applicable"]
+  - id: envelope-rejects-negative-max-operations
+    check: envelope
+    envelope:
+      message: {destinations: [chat-1], max_operations: -1}
+    expect_violations: ["non-negative integer"]
+  - id: envelope-rejects-amount-without-currency
+    check: envelope
+    envelope:
+      money: {amount: 10, max_operations: 1}
+    expect_violations: ["currency"]
+  - id: envelope-rejects-allowed-false-with-bounds
+    check: envelope
+    envelope:
+      network: {allowed: false, domains: [api.example.org], max_operations: 3}
+    expect_violations: ["allowed is false"]
+  - id: envelope-rejects-bad-currency-code
+    check: envelope
+    envelope:
+      money: {amount: 10, currency: usd}
+    expect_violations: ["ISO 4217"]
