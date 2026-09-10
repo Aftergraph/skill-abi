@@ -33,6 +33,36 @@ P4/RUNTIME_TESTED, P4M/MULTI_RUNTIME_TESTED, P5/ATTESTED.
 Static validation != runtime test != multi-runtime test != signed
 attestation. See `spec/conformance.md`.
 
+## Certificate evidence classes
+
+Certificates carry an explicit `evidence_class`, never an ambiguous
+"full" label. The class is the strongest evidence actually present:
+
+| Evidence class | Requires |
+|----------------|----------|
+| `SPEC_VALID` | parses + spec-valid; static evaluation did not fully pass |
+| `STATIC_CONFORMANT` | static invariants pass; no runtime execution |
+| `RUNTIME_TESTED` | >=1 runtime run receipt with evidence |
+| `MULTI_RUNTIME_TESTED` | >=2 independent runtime run receipts |
+| `ATTESTED` | >=2 run receipts plus a signature |
+
+A static-only result can never claim a runtime class, a single runtime can
+never claim multi-runtime, and unsigned evidence can never claim
+`ATTESTED`. `verify-certificate` checks the certificate schema, skill/ABI/
+lock digests against actual bytes, run-receipt references, runtime and
+harness identifiers, evidence existence, and the signature bundle when
+signed — structural JSON validity alone does not pass.
+
+## Single validation path
+
+`cli/sabi.py validate` calls the canonical semantic validator
+`src/sabi/validator.py:validate_skill`. There is exactly one validation
+path: Agent Skills frontmatter rules, name/description bounds, name ==
+directory, ABI schema conformance, capability resolvability, input/output
+schema references, effect and degradation declarations, and lockfile
+integrity. `VALID` means the canonical validator returned no findings.
+
+
 ## Status
 
 Experimental v0.1.0-alpha. Example skills carry sanitized fixture data

@@ -1,7 +1,8 @@
 {
   "skill": "demo-skill",
-  "skill_digest": "sha256:12148cbbbacf315ed04b01618dd997dc8db52067ec5a724f5e0b6303e8025e00",
+  "skill_digest": "sha256:e69549501dcd76f6fa2e10d51847c4541585210a2839f06b37ee0eb17edad425",
   "abi_digest": "sha256:ed623eeaf5cdf147ef515453d47c81e05e82e36221096407e197aada42856cf9",
+  "lock_digest": "sha256:7b934940fc85da95574b2537f1ecaff1eaf28e383000daa9ca318cf4544c7048",
   "sabi": "sabi/v0.1",
   "tested_runtimes": [
     {
@@ -16,7 +17,8 @@
   "passed": 2,
   "failed": 0,
   "effect_violations": 0,
-  "certificate": "full",
+  "evidence_class": "STATIC_CONFORMANT",
+  "run_receipts": [],
   "signed": false,
-  "note": "static evidence only; no live multi-harness execution"
+  "note": "static evidence only; no runtime execution performed; not runtime-tested, not attested"
 }
