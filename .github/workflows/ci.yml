@@ -13,6 +13,7 @@ jobs:
           python-version: "3.11"
       - run: pip install pyyaml cryptography pytest
       - run: python -m pytest tests/ -q
+      - run: python scripts/check_readme_drift.py
       - run: python cli/sabi.py validate examples/telegram-live-status
       - run: python cli/sabi.py test examples/telegram-live-status --matrix
   secrets:

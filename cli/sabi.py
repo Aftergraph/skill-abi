@@ -179,6 +179,19 @@ def cmd_lock(args):
     return 0
 
 
+def cmd_export(args):
+    """Export requirement-object JSON for a skill directory."""
+    from sabi.api import export_requirement_object
+    obj = export_requirement_object(Path(args.skill))
+    if args.json:
+        print(json.dumps(obj, indent=2))
+    else:
+        out = Path(args.skill) / "requirement-object.json"
+        out.write_text(json.dumps(obj, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        print(f"requirement object written: {out}")
+    return 0
+
+
 def main(argv=None):
     raw = list(argv if argv is not None else sys.argv[1:])
     json_flag = False
@@ -196,6 +209,7 @@ def main(argv=None):
     p = sub.add_parser("certify"); p.add_argument("skill"); p.set_defaults(fn=cmd_certify)
     p = sub.add_parser("verify-certificate"); p.add_argument("certificate"); p.set_defaults(fn=cmd_verify_certificate)
     p = sub.add_parser("lock"); p.add_argument("skill"); p.set_defaults(fn=cmd_lock)
+    p = sub.add_parser("export"); p.add_argument("skill"); p.set_defaults(fn=cmd_export)
     args = ap.parse_args(raw)
     args.json = args.json or json_flag
     return args.fn(args)
