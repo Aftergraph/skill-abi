@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://sabi.dev/schemas/effects.schema.json",
+  "$id": "https://aftergraph.org/sabi/effects.schema.json",
   "title": "SABI Effects Envelope",
   "description": "Quantified effect bounds for a SABI skill.",
   "type": "object",

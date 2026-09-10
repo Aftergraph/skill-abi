@@ -52,3 +52,46 @@ def test_abi_rejects_bad_spec():
 
 def test_abi_rejects_missing_capabilities():
     assert js.validate({"spec": "sabi/v0.1", "skill": "x"}, load("abi.schema.json")) != []
+
+
+# ── canonical schema family (Team D consolidation) ──────────────────
+#
+# One normative family, one $id namespace (aftergraph.org/sabi).
+# schemas/skill-abi.schema.json was the obsolete unreferenced duplicate
+# and is retired; abi.schema.json is canonical. See spec/schema-family.md.
+
+CANONICAL_NS = "https://aftergraph.org/sabi/"
+
+
+def test_all_schemas_share_canonical_namespace():
+    schema_files = sorted(SCHEMAS.glob("*.schema.json"))
+    assert schema_files, "no schema files found"
+    for path in schema_files:
+        doc = json.loads(path.read_text(encoding="utf-8"))
+        assert doc["$id"].startswith(CANONICAL_NS), (
+            f"{path.name} uses non-canonical $id {doc['$id']!r}")
+
+
+def test_obsolete_skill_abi_schema_removed():
+    assert not (SCHEMAS / "skill-abi.schema.json").exists(), (
+        "obsolete duplicate skill-abi.schema.json must stay deleted")
+
+
+def test_abi_schema_accepts_conformance_block():
+    doc = {
+        "spec": "sabi/v0.1",
+        "skill": "x",
+        "capabilities": {"required": []},
+        "conformance": {"level": "P3", "spec_version": "sabi/v0.1"},
+    }
+    assert js.validate(doc, load("abi.schema.json")) == []
+
+
+def test_abi_schema_rejects_bad_conformance_level():
+    doc = {
+        "spec": "sabi/v0.1",
+        "skill": "x",
+        "capabilities": {"required": []},
+        "conformance": {"level": "P9"},
+    }
+    assert js.validate(doc, load("abi.schema.json")) != []
