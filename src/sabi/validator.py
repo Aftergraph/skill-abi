@@ -51,6 +51,8 @@ def validate_skill(skill_dir, schemas_dir=None, write_lock=False):
                 errors.append(f"P0: frontmatter schema: {msg}")
 
     p0_ok = not errors
+    if p0_ok:
+        level = "P0"
 
     # --- P1: spec-valid ABI ---
     abi_path = skill_dir / "skill.abi.yaml"
@@ -92,14 +94,8 @@ def validate_skill(skill_dir, schemas_dir=None, write_lock=False):
             for msg in json_schema.validate(abi, sd):
                 errors.append(f"P1: abi schema: {msg}")
 
-    if schemas_dir is not None:
-        abi_schema = _load_schema(Path(schemas_dir) / "abi.schema.json")
-        if abi_schema is not None:
-            for msg in json_schema.validate(abi, abi_schema):
-                errors.append(f"P1: abi schema: {msg}")
-
-    if p0_ok and not errors:
-        level = "P0"
+    if not errors:
+        level = "P1"
 
     # --- P2: effect-aware ---
     eff_path = skill_dir / "effects.yaml"
@@ -129,7 +125,7 @@ def validate_skill(skill_dir, schemas_dir=None, write_lock=False):
                 errors.append(f"P2: effects schema: {msg}")
 
     if not errors:
-        level = "P1"
+        level = "P2"
 
     # --- P3: degradation-conformant ---
     deg_path = skill_dir / "degradation.yaml"
