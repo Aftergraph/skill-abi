@@ -1,0 +1,9 @@
+capabilities:
+  optional: []
+  required:
+  - skill.read
+spec: sabi/v0.1
+verification:
+  required:
+  - verify.noop
+version: 1.0.0

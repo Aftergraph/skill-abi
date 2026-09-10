@@ -1,0 +1,14 @@
+{
+  "lock_version": 1,
+  "skill": "bind-test",
+  "files": {
+    "SKILL.md": "sha256:122ca2de52e2feb07fa81ad622f46b4941fb498e9f26d5d1b803799180ee583c",
+    "skill.abi.yaml": "sha256:2a7674808cabe85e4fd21715bf9ad72f2330ef41e0e402940987c0a5182ad149",
+    "effects.yaml": "sha256:d406e0b86dd337708472d688d36bbbb70fd4b724b456ec6563af1953b001a534",
+    "degradation.yaml": "sha256:09e67e81d79859bb3d59ce559225b8545d8d5ef3b0d10808712cbdafd5a99c68",
+    "schemas/input.json": "sha256:ff419ebbeba438f66900abe77818ce940702bdfe70fa173cb94beecee8d3f112",
+    "schemas/output.json": "sha256:ff419ebbeba438f66900abe77818ce940702bdfe70fa173cb94beecee8d3f112",
+    "bindings/rt.yaml": "sha256:d5bc7750f7b6fe55b0b38546ea9c1d7b68b1d7d21b0832c4c7c6fc04a27b5cdf",
+    "conformance/invariants.yaml": "sha256:7897638b133b5d38122f091d55a4a2b2ed3df29ae9ce0199fb03dd2617853a1e"
+  }
+}

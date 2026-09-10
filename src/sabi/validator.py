@@ -50,6 +50,11 @@ def validate_skill(skill_dir, schemas_dir=None, write_lock=False):
             for msg in json_schema.validate(manifest.raw_frontmatter, fm_schema):
                 errors.append(f"P0: frontmatter schema: {msg}")
 
+    # Agent Skills frontmatter rules (name format, description length, etc.)
+    from sabi.parser import validate_agent_skills_frontmatter
+    for msg in validate_agent_skills_frontmatter(manifest.raw_frontmatter):
+        errors.append(f"P0: agent-skills: {msg}")
+
     p0_ok = not errors
     if p0_ok:
         level = "P0"

@@ -1,0 +1,6 @@
+effects:
+  credentials:
+    expose_to_model: false
+  filesystem.write:
+    max_operations: 0
+    scope: []

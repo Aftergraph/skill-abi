@@ -1,0 +1,4 @@
+degradation:
+  only:
+    requires: []
+    terminal: false

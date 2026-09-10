@@ -1,0 +1,7 @@
+degradation:
+  full:
+    requires:
+    - a
+    - b
+  reject:
+    terminal: true

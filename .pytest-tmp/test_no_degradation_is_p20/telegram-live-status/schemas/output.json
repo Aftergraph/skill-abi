@@ -1,0 +1,1 @@
+{"properties": {"blockers": {"type": "string"}, "deviations": {"type": "string"}, "evidence": {"type": "string"}, "result": {"enum": ["SUCCESS", "PARTIAL", "BLOCKED"]}}, "required": ["result"], "type": "object"}

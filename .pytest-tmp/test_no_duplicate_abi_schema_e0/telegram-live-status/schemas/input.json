@@ -1,0 +1,1 @@
+{"properties": {"current": {"type": "integer"}, "message": {"type": "string"}, "phase": {"type": "string"}, "status": {"enum": ["INFO", "RUNNING", "WAITING", "WARN", "FAIL", "COMPLETE"]}, "task_id": {"type": "string"}, "total": {"type": "integer"}}, "required": ["task_id", "message"], "type": "object"}

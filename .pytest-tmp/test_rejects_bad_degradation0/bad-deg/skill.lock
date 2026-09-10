@@ -1,0 +1,14 @@
+{
+  "lock_version": 1,
+  "skill": "bad-deg",
+  "files": {
+    "SKILL.md": "sha256:ab577788ed0854958e06217d05226ceb43fd4307b32b35c5524e942b4c5b154a",
+    "skill.abi.yaml": "sha256:655a919f111cb05c6857c622e5be172924d3347530af5ecb0bc087e0d158c38c",
+    "effects.yaml": "sha256:d406e0b86dd337708472d688d36bbbb70fd4b724b456ec6563af1953b001a534",
+    "degradation.yaml": "sha256:864a002e1ca415d9785b8b6340a71e5a18ef669616a1395751755bd32faab883",
+    "schemas/input.json": "sha256:ff419ebbeba438f66900abe77818ce940702bdfe70fa173cb94beecee8d3f112",
+    "schemas/output.json": "sha256:ff419ebbeba438f66900abe77818ce940702bdfe70fa173cb94beecee8d3f112",
+    "bindings/rt.yaml": "sha256:d5bc7750f7b6fe55b0b38546ea9c1d7b68b1d7d21b0832c4c7c6fc04a27b5cdf",
+    "conformance/invariants.yaml": "sha256:7897638b133b5d38122f091d55a4a2b2ed3df29ae9ce0199fb03dd2617853a1e"
+  }
+}

@@ -1,0 +1,15 @@
+- id: only-approved-destination
+  description: Telegram delivery may only target FIXTURE_USER_NAME's DM.
+  check: effects.message.send.destinations == ["telegram:FIXTURE_CHAT_ID"]
+- id: fallback-tier-on-capability-loss
+  description: Without shell.execute the skill must degrade, not pretend.
+  remove_capability: [shell.execute]
+  expect_tier: report-only
+- id: full-tier-when-capable
+  description: With shell.execute the full tier must resolve.
+  capabilities: [shell.execute]
+  expect_tier: full
+- id: terminal-tier-last
+  description: The lattice must end in an explicit terminal tier.
+- id: lock-covers-contract
+  description: skill.lock must pin the full machine contract.

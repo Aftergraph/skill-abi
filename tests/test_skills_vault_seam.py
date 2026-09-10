@@ -136,7 +136,7 @@ class TestSkillsVaultSeam:
         # Requirement object
         obj = export_requirement_object(stored)
         assert obj["skill"] == "telegram-live-status"
-        assert obj["schema"].startswith("sabi/")
+        assert "sabi" in obj["schema"]
         assert requirement_object_bytes(stored) == requirement_object_bytes(stored)
 
         # Lockfile

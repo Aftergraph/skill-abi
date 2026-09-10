@@ -1,0 +1,4 @@
+capabilities:
+- filesystem.read
+- message.send
+runtime: test-rt

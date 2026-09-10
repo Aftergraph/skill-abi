@@ -1,0 +1,11 @@
+capabilities:
+  optional:
+  - message.send
+  required:
+  - filesystem.read
+inputs: {}
+outputs:
+  schema: schemas/output.json
+skill: no-input
+spec: sabi/v0.1
+version: 1.0.0

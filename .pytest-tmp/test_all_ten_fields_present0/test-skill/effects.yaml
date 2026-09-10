@@ -1,0 +1,4 @@
+effects:
+  filesystem:
+    write:
+      allowed: false

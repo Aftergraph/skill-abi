@@ -1,0 +1,17 @@
+spec: sabi/v0.1
+skill: telegram-live-status
+version: 1.0.0
+inputs:
+  schema: schemas/input.json
+outputs:
+  schema: schemas/output.json
+capabilities:
+  required:
+    - shell.execute
+  optional: []
+verification:
+  required:
+    - sender.exit_zero
+    - card.message_id.observed
+effects_ref: effects.yaml
+degradation_ref: degradation.yaml

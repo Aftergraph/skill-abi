@@ -1,0 +1,15 @@
+capabilities:
+  optional: []
+  required:
+  - a
+  - b
+inputs:
+  schema: schemas/in.json
+outputs:
+  schema: schemas/out.json
+skill: t
+spec: sabi/v0.1
+verification:
+  required:
+  - artifact.exists
+version: 1.0.0

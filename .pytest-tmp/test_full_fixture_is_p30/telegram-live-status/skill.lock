@@ -1,0 +1,17 @@
+{
+  "lock_version": 1,
+  "skill": "telegram-live-status",
+  "files": {
+    "SKILL.md": "sha256:263da7f7e44f14d70a3131dda1d6cb7c775c1c4d14552edf0587dfab027ee2b0",
+    "skill.abi.yaml": "sha256:ca78b316900cd7419a7ef9d1d250a40a5dafa49bb0ce969e59a4cc6d6cd75242",
+    "effects.yaml": "sha256:997ba747c6cc806ddba7dc1308304f7d907113d8f72f7f5e13b4b0765a98d50a",
+    "degradation.yaml": "sha256:86607bade24fb00bd5640b7dc7c63dd0ba0d08f53d9211c9c7ebfa3206784ef8",
+    "schemas/input.json": "sha256:8c937d54451b8589f575fc92eb81bb089c88ed747dd23e12e3fc032e5e019468",
+    "schemas/output.json": "sha256:2a28c2b3a8ff4c6c21994cf8cbf421c7d2cd85574e70fe914da029c8869e281a",
+    "references/hermes-runtime.md": "sha256:37fbb1313f97b321231efdf9c3eb4adc6cc572958ba7e5a3fed852557c930ee0",
+    "references/receiver.json": "sha256:94af0ea5690a477203624e314f1c6fce5cee971b14ebf08ec14e744257dca960",
+    "bindings/hermes-wsl.yaml": "sha256:ff06667b08386276a427079bebbd111b133688c1165582694061ec69196a0f3c",
+    "bindings/minimal.yaml": "sha256:5b7613a73f42dd84e17cf2ebdd42f8a07add2fb8e4750f2e452918dd9de4cadc",
+    "conformance/invariants.yaml": "sha256:dacbd5a6cfb280549b6205e3116471d7bb065502dc6e6091e2e3f1a6e61a85c5"
+  }
+}

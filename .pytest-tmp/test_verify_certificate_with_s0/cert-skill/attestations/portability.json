@@ -1,0 +1,22 @@
+{
+  "skill": "cert-skill",
+  "skill_digest": "sha256:a0067c308cf6241ae66d98ca1fbbd4abf651ae3bd8d3ec4b5b2e9d95020ed19f",
+  "abi_digest": "sha256:04ed5005adbbe78a2f257515273f46b8a3ab57d80e15fd8d1c19e8dd3dde1909",
+  "sabi": "sabi/v0.1",
+  "tested_runtimes": [
+    {
+      "runtime": "test-rt",
+      "tier": "full"
+    }
+  ],
+  "tested_tiers": [
+    "full"
+  ],
+  "cases": 2,
+  "passed": 2,
+  "failed": 0,
+  "effect_violations": 0,
+  "certificate": "full",
+  "signed": false,
+  "note": "static evidence only; no live multi-harness execution"
+}

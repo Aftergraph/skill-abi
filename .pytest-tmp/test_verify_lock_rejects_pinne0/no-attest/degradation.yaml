@@ -1,0 +1,13 @@
+degradation:
+  full:
+    requires:
+    - filesystem.read
+    - message.send
+    terminal: false
+  partial:
+    requires:
+    - filesystem.read
+    terminal: false
+  advisory:
+    requires: []
+    terminal: true

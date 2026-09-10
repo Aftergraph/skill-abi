@@ -1,0 +1,6 @@
+runtime: read-only-session
+description: A session with no shell; the skill must degrade to report-only.
+capabilities:
+  - filesystem.read
+implementations:
+  filesystem.read: session-fs-read

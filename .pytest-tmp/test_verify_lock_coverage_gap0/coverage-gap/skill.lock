@@ -1,0 +1,12 @@
+{
+  "lock_version": 1,
+  "skill": "coverage-gap",
+  "files": {
+    "SKILL.md": "sha256:d4c7d03cac41e80fa15daa1438b271d63a8253aaee4de1eab309cdf35b8f119e",
+    "skill.abi.yaml": "sha256:0f0eacd83479d0dfa894f5f61b6322326fc7d28adb7bf103ffc99d6078bb04dc",
+    "effects.yaml": "sha256:d406e0b86dd337708472d688d36bbbb70fd4b724b456ec6563af1953b001a534",
+    "degradation.yaml": "sha256:09e67e81d79859bb3d59ce559225b8545d8d5ef3b0d10808712cbdafd5a99c68",
+    "bindings/rt.yaml": "sha256:d5bc7750f7b6fe55b0b38546ea9c1d7b68b1d7d21b0832c4c7c6fc04a27b5cdf",
+    "conformance/invariants.yaml": "sha256:7897638b133b5d38122f091d55a4a2b2ed3df29ae9ce0199fb03dd2617853a1e"
+  }
+}

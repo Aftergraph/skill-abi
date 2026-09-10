@@ -1,0 +1,5 @@
+effects:
+  message.send:
+    destinations:
+    - x
+    max_operations: 1
