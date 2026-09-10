@@ -1,1 +1,92 @@
-{"$id": "https://aftergraph.org/sabi/certificate.schema.json", "$schema": "https://json-schema.org/draft/2020-12/schema", "properties": {"abi_digest": {"type": "string"}, "cases": {"type": "integer"}, "certificate": {"enum": ["full", "conditional"]}, "effect_violations": {"type": "integer"}, "failed": {"type": "integer"}, "passed": {"type": "integer"}, "signed": {"type": "boolean"}, "skill": {"type": "string"}, "skill_digest": {"type": "string"}, "tested_runtimes": {"type": "array"}}, "required": ["skill", "skill_digest", "abi_digest", "cases", "passed", "failed", "certificate", "signed"], "title": "SABI portability certificate", "type": "object"}
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sabi.dev/schemas/certificate.schema.json",
+  "title": "SABI Portability Certificate",
+  "description": "Unsigned or signed attestation over multi-runtime evidence.",
+  "type": "object",
+  "required": [
+    "skill",
+    "skill_digest",
+    "abi_digest",
+    "sabi",
+    "cases",
+    "passed",
+    "failed",
+    "certificate",
+    "signed"
+  ],
+  "properties": {
+    "skill": {
+      "type": "string",
+      "minLength": 1
+    },
+    "skill_digest": {
+      "type": "string",
+      "pattern": "^sha256:"
+    },
+    "abi_digest": {
+      "type": "string",
+      "pattern": "^sha256:"
+    },
+    "sabi": {
+      "type": "string",
+      "pattern": "^sabi/v"
+    },
+    "tested_runtimes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "runtime",
+          "tier"
+        ],
+        "properties": {
+          "runtime": {
+            "type": "string"
+          },
+          "tier": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "tested_tiers": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "cases": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "passed": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "failed": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "effect_violations": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "certificate": {
+      "type": "string",
+      "enum": [
+        "full",
+        "conditional",
+        "none"
+      ]
+    },
+    "signed": {
+      "type": "boolean"
+    },
+    "note": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": true
+}

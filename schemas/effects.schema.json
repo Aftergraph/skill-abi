@@ -1,1 +1,21 @@
-{"$id": "https://aftergraph.org/sabi/effects.schema.json", "$schema": "https://json-schema.org/draft/2020-12/schema", "properties": {"effects": {"additionalProperties": {"type": "object"}, "minProperties": 1, "type": "object"}}, "required": ["effects"], "title": "SABI quantified effect envelope", "type": "object"}
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sabi.dev/schemas/effects.schema.json",
+  "title": "SABI Effects Envelope",
+  "description": "Quantified effect bounds for a SABI skill.",
+  "type": "object",
+  "required": [
+    "effects"
+  ],
+  "properties": {
+    "effects": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "object",
+        "minProperties": 1
+      }
+    }
+  },
+  "additionalProperties": false
+}

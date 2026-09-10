@@ -1,1 +1,35 @@
-{"$id": "https://aftergraph.org/sabi/degradation.schema.json", "$schema": "https://json-schema.org/draft/2020-12/schema", "properties": {"degradation": {"minProperties": 2, "type": "object"}}, "required": ["degradation"], "title": "SABI capability degradation lattice", "type": "object"}
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sabi.dev/schemas/degradation.schema.json",
+  "title": "SABI Degradation Model",
+  "description": "Deterministic degradation tiers for capability loss.",
+  "type": "object",
+  "required": [
+    "degradation"
+  ],
+  "properties": {
+    "degradation": {
+      "type": "object",
+      "minProperties": 2,
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "requires": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "terminal": {
+            "type": "boolean"
+          },
+          "note": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}
