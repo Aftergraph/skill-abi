@@ -1,0 +1,4 @@
+effects:
+  filesystem.write:
+    max_operations: 0
+    scope: []

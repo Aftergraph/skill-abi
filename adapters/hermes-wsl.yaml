@@ -1,0 +1,7 @@
+runtime: hermes-wsl
+description: Hermes CLI driven from WSL via the Windows venv binary.
+capabilities: [shell.execute, filesystem.read, filesystem.write]
+implementations:
+  shell.execute: windows-venv-hermes-binary
+  filesystem.read: wsl-fs-read
+  filesystem.write: wsl-fs-write

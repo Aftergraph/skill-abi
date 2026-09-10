@@ -1,0 +1,6 @@
+degradation:
+  full:
+    requires:
+    - filesystem.read
+  reject:
+    terminal: true

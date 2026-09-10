@@ -1,0 +1,27 @@
+name: ci
+on:
+  push:
+    branches: [main]
+  pull_request:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install pyyaml cryptography pytest
+      - run: python -m pytest tests/ -q
+      - run: python cli/sabi.py validate examples/telegram-live-status
+      - run: python cli/sabi.py test examples/telegram-live-status --matrix
+  secrets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: secret scan
+        run: |
+          ! grep -rEn '(ghp_|gho_|sk-|AKIA|xox[bap]-|-----BEGIN [A-Z ]*PRIVATE KEY)' \
+            --include='*.py' --include='*.md' --include='*.yaml' --include='*.json' \
+            spec src cli schemas tests examples docs || exit 1
+          echo "no secret shapes found"

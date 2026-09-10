@@ -1,0 +1,9 @@
+degradation:
+  full:
+    requires:
+      - shell.execute
+  report-only:
+    requires: []
+    note: no Telegram delivery; report status in the current session instead
+  reject:
+    terminal: true

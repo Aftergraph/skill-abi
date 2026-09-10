@@ -1,0 +1,22 @@
+{
+  "skill": "demo-skill",
+  "skill_digest": "sha256:12148cbbbacf315ed04b01618dd997dc8db52067ec5a724f5e0b6303e8025e00",
+  "abi_digest": "sha256:ed623eeaf5cdf147ef515453d47c81e05e82e36221096407e197aada42856cf9",
+  "sabi": "sabi/v0.1",
+  "tested_runtimes": [
+    {
+      "runtime": "rt",
+      "tier": "full"
+    }
+  ],
+  "tested_tiers": [
+    "full"
+  ],
+  "cases": 2,
+  "passed": 2,
+  "failed": 0,
+  "effect_violations": 0,
+  "certificate": "full",
+  "signed": false,
+  "note": "static evidence only; no live multi-harness execution"
+}

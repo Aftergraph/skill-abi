@@ -1,0 +1,16 @@
+effects:
+  message.send:
+    destinations:
+      - telegram:FIXTURE_CHAT_ID
+    max_operations: 1
+    note: one card update per invocation
+  filesystem.write:
+    scope: []
+    max_operations: 0
+  network.egress:
+    domains: []
+    max_operations: 0
+  money:
+    max_amount: 0
+  credentials:
+    expose_to_model: false

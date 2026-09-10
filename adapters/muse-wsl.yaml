@@ -1,0 +1,7 @@
+runtime: muse-wsl
+description: Muse Code headless in WSL on the same host.
+capabilities: [shell.execute, filesystem.read, filesystem.write]
+implementations:
+  shell.execute: muse-bash-tool
+  filesystem.read: muse-read-tool
+  filesystem.write: muse-write-tool

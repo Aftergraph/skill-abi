@@ -1,0 +1,9 @@
+runtime: codex-native
+description: Codex CLI headless on Windows native shell. Status NOT_TESTED
+  (owner-account usage exhausted during SkillPort Case 001); profile kept
+  for future runs, never fabricated.
+capabilities: [shell.execute, filesystem.read, filesystem.write]
+implementations:
+  shell.execute: codex-exec-tool
+  filesystem.read: codex-read-tool
+  filesystem.write: codex-write-tool

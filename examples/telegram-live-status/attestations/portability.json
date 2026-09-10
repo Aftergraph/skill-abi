@@ -1,0 +1,27 @@
+{
+  "skill": "telegram-live-status",
+  "skill_digest": "sha256:263da7f7e44f14d70a3131dda1d6cb7c775c1c4d14552edf0587dfab027ee2b0",
+  "abi_digest": "sha256:ca78b316900cd7419a7ef9d1d250a40a5dafa49bb0ce969e59a4cc6d6cd75242",
+  "sabi": "sabi/v0.1",
+  "tested_runtimes": [
+    {
+      "runtime": "hermes-wsl",
+      "tier": "full"
+    },
+    {
+      "runtime": "read-only-session",
+      "tier": "report-only"
+    }
+  ],
+  "tested_tiers": [
+    "full",
+    "report-only"
+  ],
+  "cases": 10,
+  "passed": 10,
+  "failed": 0,
+  "effect_violations": 0,
+  "certificate": "full",
+  "signed": false,
+  "note": "static evidence only; no live multi-harness execution"
+}

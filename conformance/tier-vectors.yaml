@@ -1,0 +1,28 @@
+vectors:
+  - id: full-when-capable
+    degradation:
+      full: {requires: [filesystem.read, repository.write]}
+      review: {requires: [filesystem.read]}
+      reject: {terminal: true}
+    capabilities: [filesystem.read, repository.write]
+    expect_tier: full
+  - id: degrade-one-step
+    degradation:
+      full: {requires: [filesystem.read, repository.write]}
+      review: {requires: [filesystem.read]}
+      reject: {terminal: true}
+    capabilities: [filesystem.read]
+    expect_tier: review
+  - id: empty-caps-falls-through
+    degradation:
+      full: {requires: [filesystem.read]}
+      advisory: {requires: []}
+      reject: {terminal: true}
+    capabilities: [unrelated.cap]
+    expect_tier: advisory
+  - id: terminal-floor
+    degradation:
+      full: {requires: [filesystem.read]}
+      reject: {terminal: true}
+    capabilities: []
+    expect_tier: reject

@@ -1,0 +1,14 @@
+{
+  "lock_version": 1,
+  "skill": "demo-skill",
+  "files": {
+    "SKILL.md": "sha256:12148cbbbacf315ed04b01618dd997dc8db52067ec5a724f5e0b6303e8025e00",
+    "skill.abi.yaml": "sha256:ed623eeaf5cdf147ef515453d47c81e05e82e36221096407e197aada42856cf9",
+    "effects.yaml": "sha256:77db41a51f84533db2d4a602d6b70f52f91eb4e5278db700ce800a301ca9310e",
+    "degradation.yaml": "sha256:c061b9083a12ea2665505088bc9473cf2d1f0caa946e37521d66583742be6869",
+    "schemas/in.json": "sha256:a2c799262a3ce3c19ef5cdd983bf3d12b43ab3c426227091b909dcb7054738c0",
+    "schemas/out.json": "sha256:a2c799262a3ce3c19ef5cdd983bf3d12b43ab3c426227091b909dcb7054738c0",
+    "bindings/rt.yaml": "sha256:6044b190efbee08f6004e171f1d5839993dccfb05113e7fa45c93e89f43f1ba0",
+    "conformance/invariants.yaml": "sha256:2012d6738b9e936bb6b0c8c35bbaa05ff576195a3c431bd25436535e01910ad5"
+  }
+}

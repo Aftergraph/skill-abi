@@ -1,0 +1,1 @@
+{"$id": "https://aftergraph.org/sabi/effects.schema.json", "$schema": "https://json-schema.org/draft/2020-12/schema", "properties": {"effects": {"additionalProperties": {"type": "object"}, "minProperties": 1, "type": "object"}}, "required": ["effects"], "title": "SABI quantified effect envelope", "type": "object"}

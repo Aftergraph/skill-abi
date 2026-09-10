@@ -1,0 +1,1 @@
+{"$id": "https://aftergraph.org/sabi/degradation.schema.json", "$schema": "https://json-schema.org/draft/2020-12/schema", "properties": {"degradation": {"minProperties": 2, "type": "object"}}, "required": ["degradation"], "title": "SABI capability degradation lattice", "type": "object"}
