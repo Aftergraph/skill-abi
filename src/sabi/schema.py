@@ -95,6 +95,8 @@ def validate(instance, schema, root=None, path=""):
     if isinstance(instance, str):
         if "minLength" in schema and len(instance) < schema["minLength"]:
             errors.append(f"{path}: string length {len(instance)} < minLength {schema['minLength']}")
+        if "maxLength" in schema and len(instance) > schema["maxLength"]:
+            errors.append(f"{path}: string length {len(instance)} > maxLength {schema['maxLength']}")
         if "pattern" in schema:
             if not re.search(schema["pattern"], instance):
                 errors.append(f"{path}: string does not match pattern {schema['pattern']!r}")

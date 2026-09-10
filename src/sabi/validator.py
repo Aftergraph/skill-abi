@@ -7,6 +7,7 @@ strings and returned; callers raise/map to ValidationError as needed.
 import json
 from pathlib import Path
 
+from sabi import agentskills
 from sabi import schema as json_schema
 from sabi import vocab
 from sabi.errors import ValidationError
@@ -39,9 +40,12 @@ def validate_skill(skill_dir, schemas_dir=None, write_lock=False):
     if not rest.strip():
         errors.append("P0: empty body after frontmatter")
 
-    if manifest.name != skill_dir.name:
-        errors.append(
-            f"P0: frontmatter name {manifest.name!r} != directory {skill_dir.name!r}")
+    # Agent Skills spec compliance (the spec wins over SABI extensions):
+    # name/description/optional fields and optional spec directories.
+    for msg in agentskills.check_frontmatter(manifest.raw_frontmatter, skill_dir):
+        errors.append(f"P0: Agent Skills: {msg}")
+    for msg in agentskills.check_directories(skill_dir):
+        errors.append(f"P0: Agent Skills: {msg}")
 
     # schema-validate the frontmatter itself when a schema dir is given
     if schemas_dir is not None:
