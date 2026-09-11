@@ -1,8 +1,8 @@
 {
   "skill": "demo-skill",
-  "skill_digest": "sha256:e69549501dcd76f6fa2e10d51847c4541585210a2839f06b37ee0eb17edad425",
+  "skill_digest": "sha256:0a88d07e767c7fb2496b0649ee2bb88b906719b7cfa62e16a6fa0f368fa49222",
   "abi_digest": "sha256:ed623eeaf5cdf147ef515453d47c81e05e82e36221096407e197aada42856cf9",
-  "lock_digest": "sha256:7b934940fc85da95574b2537f1ecaff1eaf28e383000daa9ca318cf4544c7048",
+  "lock_digest": "sha256:6991840f3c023cc2a87bac9bacb016b284142ef0a58e6da0e2f321be8400dfee",
   "sabi": "sabi/v0.1",
   "tested_runtimes": [
     {

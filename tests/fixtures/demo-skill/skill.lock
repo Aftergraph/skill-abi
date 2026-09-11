@@ -2,7 +2,7 @@
   "lock_version": 1,
   "skill": "demo-skill",
   "files": {
-    "SKILL.md": "sha256:7932b055b5c19036da7054306b5df074fe9f447b3df24d8db8815ffcce87c11c",
+    "SKILL.md": "sha256:0a88d07e767c7fb2496b0649ee2bb88b906719b7cfa62e16a6fa0f368fa49222",
     "skill.abi.yaml": "sha256:ed623eeaf5cdf147ef515453d47c81e05e82e36221096407e197aada42856cf9",
     "effects.yaml": "sha256:cf7db7f1b193648a99583ccbcc3c7220996e551e2b311667cff4df1e7a7992f8",
     "degradation.yaml": "sha256:c061b9083a12ea2665505088bc9473cf2d1f0caa946e37521d66583742be6869",

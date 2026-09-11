@@ -414,15 +414,15 @@ def test_demo_skill_verify_lock(tmp_path):
 
 
 def test_lock_then_certify_then_verify_certificate():
-    s = str(FIXTURE / "demo-skill")
+    s = str(FIXTURES_DIR / "demo-skill")
     assert run("lock", s).returncode == 0
     assert run("certify", s).returncode == 0
     r = run("verify-certificate", s + "/attestations/portability.json")
-    assert r.returncode == 0 and "verified" in r.stdout
+    assert r.returncode == 0 and "VALID" in r.stdout
 
 
 def test_certify_static_is_not_full():
-    s = str(FIXTURE / "demo-skill")
+    s = str(FIXTURES_DIR / "demo-skill")
     assert run("lock", s).returncode == 0
     r = run("certify", s)
     assert r.returncode == 0

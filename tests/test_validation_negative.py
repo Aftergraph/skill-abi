@@ -127,7 +127,7 @@ def test_name_directory_mismatch_rejected(tmp_path):
     _mutate_frontmatter(dest, name="other-skill")
     _relock(dest)
     _, errors = validate_skill(dest)
-    _assert_error(errors, "!= directory")
+    _assert_error(errors, "must match skill name")
 
 
 # ── description bound ───────────────────────────────────────────────

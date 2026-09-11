@@ -72,7 +72,7 @@ def test_valid_static_certificate_verifies(tmp_path):
     skill = _prepared_skill(tmp_path)
     cert_path = skill / "attestations" / "portability.json"
     r = _verify(cert_path)
-    assert r.returncode == 0 and "verified" in r.stdout, r.stdout
+    assert r.returncode == 0 and "VALID" in r.stdout, r.stdout
 
 
 def test_structural_json_only_rejected(tmp_path):

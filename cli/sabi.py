@@ -165,7 +165,7 @@ def cmd_verify_certificate(args):
         print(json.dumps(result, indent=2))
     else:
         ok = result.get("valid", False)
-        print(f"{'VALID' if ok else 'INVALID'}: {result.get('certificate', '?')} "
+        print(f"{'VALID' if ok else 'INVALID'}: {result.get('evidence_class', '?')} "
               f"({result.get('passed')}/{result.get('cases')})")
         for p in result.get("problems", []):
             print(f"  - {p}")
@@ -256,11 +256,7 @@ def main(argv=None):
     p = sub.add_parser("diff"); p.add_argument("old"); p.add_argument("new"); p.set_defaults(fn=cmd_diff)
     p = sub.add_parser("test"); p.add_argument("skill"); p.add_argument("--matrix", action="store_true"); p.set_defaults(fn=cmd_test)
     p = sub.add_parser("certify"); p.add_argument("skill"); p.set_defaults(fn=cmd_certify)
-<<<<<<< HEAD
-    p = sub.add_parser("verify-certificate"); p.add_argument("certificate"); p.add_argument("--skill"); p.set_defaults(fn=cmd_verify_certificate)
-=======
     p = sub.add_parser("verify-certificate"); p.add_argument("certificate"); p.add_argument("--skill", default=None); p.set_defaults(fn=cmd_verify_certificate)
->>>>>>> wt-abc
     p = sub.add_parser("lock"); p.add_argument("skill"); p.set_defaults(fn=cmd_lock)
     p = sub.add_parser("verify-lock"); p.add_argument("skill"); p.set_defaults(fn=cmd_verify_lock)
     p = sub.add_parser("bind"); p.add_argument("skill"); p.add_argument("--runtime", required=True); p.set_defaults(fn=cmd_bind)

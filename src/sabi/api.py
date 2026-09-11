@@ -200,37 +200,89 @@ def certify(skill_dir: Path) -> Dict[str, Any]:
 
 
 def verify_certificate(cert_path: Path, skill_dir: Optional[Path] = None) -> Dict[str, Any]:
-    """Verify a portability certificate. Optionally re-verify digest against skill_dir."""
-    from sabi.errors import IntegrityError
+    """Verify a portability certificate. Optionally re-verify digest against skill_dir.
+
+    When skill_dir is None the cert's grandparent directory is used
+    (i.e. <skill>/attestations/<cert>.json -> <skill>).
+
+    Validates:
+    - structural fields present (skill, digests, counts)
+    - passed+failed == cases
+    - evidence_class is a known class
+    - evidence_class is consistent with the evidence provided
+    - signed certs must have a signature block
+    - evidence files referenced in run_receipts exist
+    - runtime identifiers present in receipts
+    - skill/ABI/lock digests re-verified against actual bytes
+    """
+    from sabi.certify import EVIDENCE_CLASSES
     cert = json.loads(cert_path.read_text(encoding="utf-8"))
     problems = []
-    for k in ("skill", "skill_digest", "abi_digest", "cases", "passed", "failed"):
+
+    # Required fields
+    for k in ("skill", "skill_digest", "abi_digest", "cases", "passed", "failed", "evidence_class"):
         if k not in cert:
             problems.append(f"missing field: {k}")
+
+    # passed+failed == cases
     if cert.get("passed", 0) + cert.get("failed", 0) != cert.get("cases", -1):
         problems.append("passed+failed != cases")
-    if cert.get("signed"):
-        problems.append("signed=true requires detached signature check (see sabi-sign)")
 
-    # Optional digest re-verification against the skill directory
-    if skill_dir is not None and not problems:
-        skill_dir = Path(skill_dir)
-        actual_skill_digest = digest_file_uri(skill_dir / "SKILL.md")
+    # Evidence class validation
+    ec = cert.get("evidence_class", "")
+    if ec and ec not in EVIDENCE_CLASSES:
+        problems.append(f"unknown evidence_class: {ec!r} (expected one of {EVIDENCE_CLASSES})")
+    if ec == "RUNTIME_TESTED" and not cert.get("run_receipts"):
+        problems.append("RUNTIME_TESTED requires >=1 run receipt")
+    if ec == "MULTI_RUNTIME_TESTED" and not cert.get("run_receipts"):
+        problems.append("MULTI_RUNTIME_TESTED requires >=2 run receipts")
+    if ec == "ATTESTED" and not cert.get("signed"):
+        problems.append("ATTESTED requires signed=true")
+    if cert.get("signed"):
+        problems.append("signed=true requires a signature block")
+
+    # Evidence file existence check (resolve relative to cert's grandparent = skill dir)
+    for i, receipt in enumerate(cert.get("run_receipts", [])):
+        if "runtime" not in receipt:
+            problems.append(f"receipt [{i}] missing runtime identifier")
+        ev = receipt.get("evidence", "")
+        if ev:
+            ev_path = cert_path.parent.parent / ev
+            if not ev_path.is_file():
+                problems.append(f"evidence not found: {ev}")
+
+    # Digest re-verification against the skill directory
+    resolved_skill = Path(skill_dir) if skill_dir is not None else cert_path.parent.parent
+    sm = resolved_skill / "SKILL.md"
+    if not sm.is_file():
+        problems.append(f"skill directory not found or missing SKILL.md: {resolved_skill}")
+    else:
+        actual_skill_digest = digest_file_uri(sm)
         if cert.get("skill_digest") and cert["skill_digest"] != actual_skill_digest:
-            raise IntegrityError(
-                f"skill_digest mismatch: {cert['skill_digest']} != {actual_skill_digest}"
+            problems.append(
+                f"skill_digest does not match SKILL.md bytes "
+                f"(expected {cert['skill_digest']}, got {actual_skill_digest})"
             )
-        abi_path = skill_dir / "skill.abi.yaml"
+        abi_path = resolved_skill / "skill.abi.yaml"
         if abi_path.is_file():
             actual_abi_digest = digest_file_uri(abi_path)
             if cert.get("abi_digest") and cert["abi_digest"] != actual_abi_digest:
-                raise IntegrityError(
-                    f"abi_digest mismatch: {cert['abi_digest']} != {actual_abi_digest}"
+                problems.append(
+                    f"abi_digest does not match skill.abi.yaml bytes "
+                    f"(expected {cert['abi_digest']}, got {actual_abi_digest})"
+                )
+        lock_path = resolved_skill / "skill.lock"
+        if lock_path.is_file() and cert.get("lock_digest"):
+            actual_lock_digest = digest_file_uri(lock_path)
+            if cert["lock_digest"] != actual_lock_digest:
+                problems.append(
+                    f"lock_digest does not match skill.lock bytes "
+                    f"(expected {cert['lock_digest']}, got {actual_lock_digest})"
                 )
 
     return {
         "valid": not problems,
-        "certificate": cert.get("certificate"),
+        "evidence_class": cert.get("evidence_class"),
         "cases": cert.get("cases"),
         "passed": cert.get("passed"),
         "failed": cert.get("failed"),
