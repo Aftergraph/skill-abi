@@ -1,1 +1,74 @@
-{"$id": "https://aftergraph.org/sabi/abi.schema.json", "$schema": "https://json-schema.org/draft/2020-12/schema", "additionalProperties": true, "properties": {"capabilities": {"additionalProperties": false, "properties": {"optional": {"items": {"type": "string"}, "type": "array"}, "required": {"items": {"type": "string"}, "type": "array"}}, "required": ["required"], "type": "object"}, "degradation_ref": {"type": "string"}, "effects_ref": {"type": "string"}, "inputs": {"properties": {"schema": {"type": "string"}}, "required": ["schema"], "type": "object"}, "outputs": {"properties": {"schema": {"type": "string"}}, "required": ["schema"], "type": "object"}, "skill": {"minLength": 1, "type": "string"}, "spec": {"pattern": "^sabi/v", "type": "string"}, "verification": {"type": "object"}, "version": {"type": "string"}}, "required": ["spec", "skill", "capabilities"], "title": "SABI skill.abi.yaml document", "type": "object"}
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aftergraph.org/sabi/abi.schema.json",
+  "title": "SABI skill.abi.yaml document",
+  "description": "Canonical normative schema for a SABI skill ABI descriptor (skill.abi.yaml). Namespace decision: the SABI schema family uses the single $id namespace https://aftergraph.org/sabi/ (org-owned canonical domain); the legacy https://sabi.dev/schemas/ namespace is retired. This file supersedes the former schemas/skill-abi.schema.json, which was an unreferenced duplicate of this document's shape; its unique normative constraint (the conformance.level ladder) is preserved below.",
+  "$comment": "Canonical ABI descriptor schema. Read by src/sabi/validator.py (P1) and tests/test_schemas.py, tests/test_validator_schemas.py. Namespace: aftergraph.org/sabi. See spec/schema-family.md.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["spec", "skill", "capabilities"],
+  "properties": {
+    "spec": {
+      "type": "string",
+      "pattern": "^sabi/v"
+    },
+    "skill": {
+      "type": "string",
+      "minLength": 1
+    },
+    "version": {
+      "type": "string"
+    },
+    "capabilities": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required"],
+      "properties": {
+        "required": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "optional": {
+          "type": "array",
+          "items": {"type": "string"}
+        }
+      }
+    },
+    "inputs": {
+      "type": "object",
+      "required": ["schema"],
+      "properties": {
+        "schema": {"type": "string"}
+      }
+    },
+    "outputs": {
+      "type": "object",
+      "required": ["schema"],
+      "properties": {
+        "schema": {"type": "string"}
+      }
+    },
+    "verification": {
+      "type": "object",
+      "properties": {
+        "required": {
+          "type": "array",
+          "items": {"type": "string"}
+        }
+      }
+    },
+    "conformance": {
+      "type": "object",
+      "properties": {
+        "level": {
+          "type": "string",
+          "enum": ["P0", "P1", "P2", "P3", "P4", "P4M", "P5"]
+        },
+        "spec_version": {"type": "string"},
+        "evidence_ref": {"type": "string"}
+      }
+    },
+    "effects_ref": {"type": "string"},
+    "degradation_ref": {"type": "string"}
+  }
+}

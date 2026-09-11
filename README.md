@@ -21,7 +21,9 @@ python -m pytest tests/ -q
   diff, lockfile, certify)
 - `cli/sabi.py` — command surface (validate, inspect, resolve, diff,
   test, certify, verify-certificate, lock)
-- `schemas/` — JSON Schemas (draft 2020-12)
+- `schemas/` — JSON Schemas (draft 2020-12), one canonical family under
+  the `https://aftergraph.org/sabi/` `$id` namespace (see
+  `spec/schema-family.md`)
 - `conformance/` — positive/negative/adversarial vectors
 - `examples/` — migrated example skills (sanitized fixtures only)
 - `tests/` — pytest suite, stdlib, no network

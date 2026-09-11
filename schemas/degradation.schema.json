@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://sabi.dev/schemas/degradation.schema.json",
+  "$id": "https://aftergraph.org/sabi/degradation.schema.json",
   "title": "SABI Degradation Model",
   "description": "Deterministic degradation tiers for capability loss.",
   "type": "object",

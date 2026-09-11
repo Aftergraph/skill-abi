@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://sabi.dev/schemas/effects.schema.json",
+  "$id": "https://aftergraph.org/sabi/effects.schema.json",
   "title": "SABI Effects Envelope",
   "description": "Typed, quantified effect bounds for a SABI skill. The envelope is a SEMANTIC BOUND only: SABI states what a skill may change; runtime and trust systems enforce the bound. Provider-specific enforcement is deliberately out of scope of this ABI.",
   "type": "object",

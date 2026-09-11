@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://sabi.dev/schemas/certificate.schema.json",
+  "$id": "https://aftergraph.org/sabi/certificate.schema.json",
   "title": "SABI Portability Certificate",
   "description": "Unsigned or signed attestation over multi-runtime evidence.",
   "type": "object",
