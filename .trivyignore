@@ -1,0 +1,3 @@
+# Trivy vulnerability ignore file.
+# Entries are CVE IDs or GHSA IDs.
+# Format: <id> [optional comment]

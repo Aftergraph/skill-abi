@@ -1,0 +1,63 @@
+name: release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      build_artifacts:
+        description: "Build and attach distribution artifacts"
+        type: boolean
+        default: true
+
+# UNTRUSTED-CLASS RUNNER POLICY: this workflow runs ONLY on GitHub-hosted
+# runners, never on the self-hosted VDS (see docs/runner-security.md).
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548 # v6.1.0
+        with:
+          python-version: "3.11"
+      - name: fresh venv + pinned install
+        run: |
+          python -m venv .release-venv
+          ./.release-venv/bin/python -m pip install --upgrade pip
+          ./.release-venv/bin/python -m pip install -r requirements-dev.txt
+      - name: full test suite in fresh venv
+        run: ./.release-venv/bin/python -m pytest tests/ -q
+      - name: check all actions SHA-pinned
+        run: ./.release-venv/bin/python scripts/check_action_pins.py
+
+  artifacts:
+    if: github.event_name == 'push' || inputs.build_artifacts
+    needs: verify
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: checksum source snapshot (git archive)
+        run: |
+          mkdir -p release-artifacts
+          git archive --format=tar.gz -o release-artifacts/source.tar.gz HEAD
+          sha256sum release-artifacts/source.tar.gz > release-artifacts/source.tar.gz.sha256
+      - name: upload release artifacts
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        with:
+          name: release-artifacts
+          path: release-artifacts/
