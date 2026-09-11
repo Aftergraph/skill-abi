@@ -29,6 +29,10 @@ def _load_yaml(p):
     return yaml.safe_load(Path(p).read_text(encoding="utf-8"))
 
 
+def _repo_root():
+    return Path(__file__).resolve().parents[1]
+
+
 def cmd_validate(args):
     """Validate a skill directory (one canonical path: api.validate_canonical)."""
     from sabi.api import validate_canonical
@@ -127,6 +131,9 @@ def cmd_certify(args):
     from sabi.certify import evaluate_invariants, build_certificate
     from sabi.resolver import resolve_tier
     skill = Path(args.skill)
+    if not (skill / "skill.lock").is_file():
+        print("certify: skill.lock missing (run `sabi lock` first)")
+        return 1
     deg = (_load_yaml(skill / "degradation.yaml") or {}).get("degradation", {})
     records = []
     for prof_p in sorted((skill / "bindings").glob("*.yaml")):
@@ -139,7 +146,8 @@ def cmd_certify(args):
     out = skill / "attestations" / "portability.json"
     out.parent.mkdir(exist_ok=True)
     out.write_bytes((json.dumps(cert, indent=2) + "\n").encode("utf-8"))
-    print(f"certificate: {cert['certificate']} ({cert['passed']}/{cert['cases']}), unsigned")
+    print(f"certificate: {cert['evidence_class']} "
+          f"({cert['passed']}/{cert['cases']}), unsigned")
     return 0 if cert["failed"] == 0 else 1
 
 
@@ -248,7 +256,11 @@ def main(argv=None):
     p = sub.add_parser("diff"); p.add_argument("old"); p.add_argument("new"); p.set_defaults(fn=cmd_diff)
     p = sub.add_parser("test"); p.add_argument("skill"); p.add_argument("--matrix", action="store_true"); p.set_defaults(fn=cmd_test)
     p = sub.add_parser("certify"); p.add_argument("skill"); p.set_defaults(fn=cmd_certify)
+<<<<<<< HEAD
     p = sub.add_parser("verify-certificate"); p.add_argument("certificate"); p.add_argument("--skill"); p.set_defaults(fn=cmd_verify_certificate)
+=======
+    p = sub.add_parser("verify-certificate"); p.add_argument("certificate"); p.add_argument("--skill", default=None); p.set_defaults(fn=cmd_verify_certificate)
+>>>>>>> wt-abc
     p = sub.add_parser("lock"); p.add_argument("skill"); p.set_defaults(fn=cmd_lock)
     p = sub.add_parser("verify-lock"); p.add_argument("skill"); p.set_defaults(fn=cmd_verify_lock)
     p = sub.add_parser("bind"); p.add_argument("skill"); p.add_argument("--runtime", required=True); p.set_defaults(fn=cmd_bind)

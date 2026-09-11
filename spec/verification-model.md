@@ -156,3 +156,33 @@ referenced by stable identifier. Evidence that cannot be re-examined by a
 third party does not support conformance claims. Evidence bundles SHOULD
 include sufficient context (runtime version, binding file hash, harness
 version) to reproduce the verification result.
+
+## 6. Certificate Evidence Classes
+
+The machine-readable carrier of a verification claim is the portability
+certificate. Its `evidence_class` field is the highest evidence class the
+certificate's evidence supports, drawn from a fixed enumeration:
+
+| Evidence class | Stage | Evidence required |
+|----------------|-------|-------------------|
+| `SPEC_VALID` | P1 | contract artifacts parse and are spec-valid; static evaluation did not fully pass |
+| `STATIC_CONFORMANT` | P2-P3 | static invariants pass; no runtime execution performed |
+| `RUNTIME_TESTED` | P4 | at least one runtime run receipt (runtime, harness, evidence) |
+| `MULTI_RUNTIME_TESTED` | P4M | at least two independent runtime run receipts |
+| `ATTESTED` | P5 | at least two run receipts plus a signature over the evidence bundle |
+
+A static-only result MUST carry `STATIC_CONFORMANT` or `SPEC_VALID` and
+MUST NOT emit wording equivalent to full runtime certification. An unsigned
+result MUST NOT carry `ATTESTED`. A certificate MUST NOT claim a class
+stronger than its evidence: the classification rules in Section 4 apply.
+
+`verify-certificate` MUST reject a certificate whose digests do not match
+the actual `SKILL.md`, `skill.abi.yaml`, and `skill.lock` bytes, whose run
+receipts lack runtime/harness identifiers or reference missing evidence
+files, or whose signature block is absent when `signed` is true.
+Structural JSON validity alone is never sufficient to accept a
+certificate.
+
+Historical certificates that predate this enumeration are retained as
+evidence but MUST NOT be presented as current-class certifications; they
+are re-issued under the current rules rather than silently rewritten.

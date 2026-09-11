@@ -5,6 +5,7 @@ skill directory. No network, no LLM. All findings are accumulated as
 strings and returned; callers raise/map to ValidationError as needed.
 """
 import json
+import re
 from pathlib import Path
 
 from sabi import agentskills
@@ -15,14 +16,32 @@ from sabi.errors import ValidationError
 from sabi.parser import load_manifest, parse_abi_yaml
 from sabi.lockfile import check_lock
 
+# Agent Skills name rule: 1-64 chars, lowercase alnum + hyphen, no leading
+# or trailing hyphen, no consecutive '--'.
+NAME_RE = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
+NAME_MAX = 64
+DESCRIPTION_MAX = 1024
+
+
+def default_schemas_dir():
+    """Return the repository's canonical schemas directory."""
+    return Path(__file__).resolve().parents[2] / "schemas"
+
 
 def validate_skill(skill_dir, schemas_dir=None, write_lock=False):
     """Validate one skill directory. Returns (level, errors).
+
+    This is the single canonical semantic validator. It enforces the
+    Agent Skills frontmatter rules, ABI schema conformance, capability
+    resolvability, input/output schema references, effect and
+    degradation declarations, and lockfile integrity.
 
     level is the highest conformance level proven (P0, P1, P2, P3),
     or a failure marker. errors is a list of finding strings.
     """
     skill_dir = Path(skill_dir)
+    if schemas_dir is None:
+        schemas_dir = default_schemas_dir()
     errors = []
     level = "INVALID"
 
@@ -47,6 +66,19 @@ def validate_skill(skill_dir, schemas_dir=None, write_lock=False):
         errors.append(f"P0: Agent Skills: {msg}")
     for msg in agentskills.check_directories(skill_dir):
         errors.append(f"P0: Agent Skills: {msg}")
+
+    # Agent Skills name + description rules (enforced regardless of schema)
+    name = str(manifest.name)
+    if not (1 <= len(name) <= NAME_MAX):
+        errors.append(f"P0: name length {len(name)} not in 1..{NAME_MAX}")
+    if not NAME_RE.match(name):
+        errors.append(
+            f"P0: name {name!r} must be 1-{NAME_MAX} lowercase alnum/hyphen chars, "
+            "no leading/trailing hyphen, no consecutive '--'")
+    desc_len = len(str(manifest.description))
+    if desc_len > DESCRIPTION_MAX:
+        errors.append(
+            f"P0: description length {desc_len} exceeds {DESCRIPTION_MAX}")
 
     # schema-validate the frontmatter itself when a schema dir is given
     if schemas_dir is not None:
@@ -75,8 +107,20 @@ def validate_skill(skill_dir, schemas_dir=None, write_lock=False):
     if not spec.startswith("sabi/"):
         errors.append("P1: abi spec must look like sabi/vX")
 
+    # skill.abi.yaml must validate against the abi schema (single check,
+    # independent of whether inputs/outputs schemas exist).
+    if schemas_dir is not None:
+        abi_schema = _load_schema(Path(schemas_dir) / "abi.schema.json")
+        if abi_schema is not None:
+            for msg in json_schema.validate(abi, abi_schema):
+                errors.append(f"P1: abi schema: {msg}")
+
+    caps_doc = abi.get("capabilities")
+    if not isinstance(caps_doc, dict):
+        errors.append("P1: abi capabilities must be a mapping")
+        caps_doc = {}
     for key in ("required", "optional"):
-        caps = (abi.get("capabilities", {}) or {}).get(key, []) or []
+        caps = caps_doc.get(key, []) or []
         for bad in vocab.unknown(caps):
             errors.append(f"P1: capability {bad!r} not in SABI vocabulary")
 
@@ -97,12 +141,6 @@ def validate_skill(skill_dir, schemas_dir=None, write_lock=False):
             continue
         if not isinstance(data, dict):
             errors.append(f"P1: {rel} must be a JSON object")
-            continue
-        sd = _load_schema(Path(schemas_dir) / "abi.schema.json") if schemas_dir else None
-        if sd is not None:
-            # Validate the ABI yaml document against the abi schema.
-            for msg in json_schema.validate(abi, sd):
-                errors.append(f"P1: abi schema: {msg}")
 
     if not errors:
         level = "P1"

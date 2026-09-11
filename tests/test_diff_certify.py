@@ -76,4 +76,7 @@ def test_certificate_counts(tmp_path):
     cert = build_certificate(skill, [("rt", "full", res)])
     assert cert["cases"] == 2 and cert["passed"] == 2
     assert cert["signed"] is False
-    assert cert["certificate"] == "full"
+    assert cert["evidence_class"] == "STATIC_CONFORMANT"
+    assert "full" not in cert["evidence_class"].lower()
+    assert cert["lock_digest"].startswith("sha256:")
+    assert cert["run_receipts"] == []
