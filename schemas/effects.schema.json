@@ -2,20 +2,149 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://sabi.dev/schemas/effects.schema.json",
   "title": "SABI Effects Envelope",
-  "description": "Quantified effect bounds for a SABI skill.",
+  "description": "Typed, quantified effect bounds for a SABI skill. The envelope is a SEMANTIC BOUND only: SABI states what a skill may change; runtime and trust systems enforce the bound. Provider-specific enforcement is deliberately out of scope of this ABI.",
   "type": "object",
-  "required": [
-    "effects"
-  ],
+  "required": ["effects"],
+  "additionalProperties": false,
   "properties": {
     "effects": {
       "type": "object",
       "minProperties": 1,
-      "additionalProperties": {
-        "type": "object",
-        "minProperties": 1
+      "description": "Exactly one entry per effect category. Undeclared dimensions default to empty (no access), never to unlimited.",
+      "additionalProperties": false,
+      "properties": {
+        "filesystem": {"$ref": "#/$defs/filesystem"},
+        "repository": {"$ref": "#/$defs/repository"},
+        "process": {"$ref": "#/$defs/process"},
+        "network": {"$ref": "#/$defs/network"},
+        "message": {"$ref": "#/$defs/message"},
+        "artifact": {"$ref": "#/$defs/artifact"},
+        "deployment": {"$ref": "#/$defs/deployment"},
+        "credential": {"$ref": "#/$defs/credential"},
+        "money": {"$ref": "#/$defs/money"},
+        "filesystem.read": {"$ref": "#/$defs/filesystem"},
+        "filesystem.write": {"$ref": "#/$defs/filesystem"},
+        "repository.push": {"$ref": "#/$defs/repository"},
+        "process.spawn": {"$ref": "#/$defs/process"},
+        "network.egress": {"$ref": "#/$defs/network"},
+        "message.send": {"$ref": "#/$defs/message"},
+        "artifact.create": {"$ref": "#/$defs/artifact"},
+        "deployment.create": {"$ref": "#/$defs/deployment"},
+        "credentials": {"$ref": "#/$defs/credential"}
       }
     }
   },
-  "additionalProperties": false
+  "$defs": {
+    "filesystem": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": false,
+      "properties": {
+        "allowed": {"type": "boolean"},
+        "scope": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "paths": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "max_operations": {"type": "integer", "minimum": 0},
+        "note": {"type": "string"}
+      }
+    },
+    "repository": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": false,
+      "properties": {
+        "allowed": {"type": "boolean"},
+        "scope": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "branches": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "max_operations": {"type": "integer", "minimum": 0},
+        "note": {"type": "string"}
+      }
+    },
+    "process": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": false,
+      "properties": {
+        "allowed": {"type": "boolean"},
+        "scope": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "environment": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "max_operations": {"type": "integer", "minimum": 0},
+        "note": {"type": "string"}
+      }
+    },
+    "network": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": false,
+      "properties": {
+        "allowed": {"type": "boolean"},
+        "destinations": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "domains": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "max_operations": {"type": "integer", "minimum": 0},
+        "note": {"type": "string"}
+      }
+    },
+    "message": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": false,
+      "properties": {
+        "allowed": {"type": "boolean"},
+        "destinations": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "max_operations": {"type": "integer", "minimum": 0},
+        "note": {"type": "string"}
+      }
+    },
+    "artifact": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": false,
+      "properties": {
+        "allowed": {"type": "boolean"},
+        "scope": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "paths": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "max_operations": {"type": "integer", "minimum": 0},
+        "note": {"type": "string"}
+      }
+    },
+    "deployment": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": false,
+      "properties": {
+        "allowed": {"type": "boolean"},
+        "scope": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "destinations": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "environment": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "max_operations": {"type": "integer", "minimum": 0},
+        "note": {"type": "string"}
+      }
+    },
+    "credential": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": false,
+      "required": ["expose_to_model"],
+      "properties": {
+        "allowed": {"type": "boolean"},
+        "scope": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "environment": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "expose_to_model": {"const": false},
+        "max_operations": {"type": "integer", "minimum": 0},
+        "note": {"type": "string"}
+      }
+    },
+    "money": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": false,
+      "properties": {
+        "allowed": {"type": "boolean"},
+        "amount": {"type": "number", "minimum": 0},
+        "max_amount": {"type": "number", "minimum": 0},
+        "currency": {"type": "string", "pattern": "^[A-Z]{3}$"},
+        "max_operations": {"type": "integer", "minimum": 0},
+        "note": {"type": "string"}
+      }
+    }
+  }
 }

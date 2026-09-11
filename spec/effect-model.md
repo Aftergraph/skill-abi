@@ -1,12 +1,13 @@
 # SABI v0.1 — Effect Model (E)
 
-**Version:** 0.1.0
+**Version:** 0.1.1
 **Status:** Draft
 **Date:** 2026-09-10
 
 This document defines the normative effect bounds, authority separation,
-bound dimensions, and enforcement responsibilities for the Effects component
-(E) of the SABI skill tuple S = <I, O, C, E, D, V>.
+bound dimensions, typed constraint semantics, and enforcement
+responsibilities for the Effects component (E) of the SABI skill tuple
+S = <I, O, C, E, D, V>.
 
 Prerequisites: `SABI-v0.1.md` (scope, invariant), `terminology.md` (terms).
 
@@ -40,6 +41,21 @@ block the operation or halt the skill, depending on the binding's failure
 semantics. If a runtime cannot enforce a declared bound, it MUST refuse to
 execute the skill rather than execute it unbounded.
 
+### 2.1 The semantic-bound boundary
+
+SABI defines the **semantic bound only**. This document, the effects schema,
+and the reference effect checker specify:
+
+1. what a declaration *means* (typed, quantified constraint semantics), and
+2. when one declaration is *contained in* another (no widening).
+
+They do **not** specify how the bound is enforced. Provider-specific
+enforcement — sandboxing, syscall filtering, egress proxies, secret
+injection, approval gates, spend limits — belongs to runtime and trust
+systems and MUST NOT be encoded in this ABI. A binding record MAY map an
+abstract category to a concrete enforcement mechanism, but the mapping is
+not part of the semantic bound.
+
 ## 3. Bound Dimensions
 
 Every effect declaration MUST specify values across five dimensions:
@@ -60,15 +76,8 @@ MUST be explicitly declared and require higher verification evidence.
 ### 3.2 Scope
 
 The set of resources an effect may touch. Scope MUST be enumerated or
-bounded by a pattern.
-
-Examples:
-- `filesystem.write.scope`: list of path globs the skill may write to.
-  An empty list (`[]`) means no filesystem writes are declared.
-- `network.egress.domains`: list of domains the skill may contact.
-  An empty list means no network egress is declared.
-
-An undeclared scope dimension defaults to empty (no access), not unlimited.
+bounded by a pattern. An undeclared scope dimension defaults to empty
+(no access), never to unlimited.
 
 ### 3.3 External Visibility
 
@@ -90,37 +99,74 @@ Numeric limits on how many times an effect may occur per invocation.
 - `max_operations`: maximum number of discrete operations (e.g., messages sent,
   files written). MUST be a non-negative integer. A value of `0` means the
   effect category is declared but must not occur.
-- `max_amount`: for financial effects, the maximum monetary value per
-  invocation. MUST be a non-negative number with currency unit. A value of `0`
-  means no financial operations are permitted.
+- `amount`: for monetary effects, the maximum value per invocation. MUST be a
+  non-negative number. A value of `0` means no financial operations are
+  permitted. `amount` greater than `0` REQUIRES an explicit `currency`.
+- `currency`: ISO 4217 three-letter uppercase code (pattern `^[A-Z]{3}$`).
+  A monetary declaration with no currency is unbounded in unit and therefore
+  INVALID when `amount > 0`.
+
+`max_amount` is accepted as a v0.1 compatibility alias for `amount`.
 
 ### 3.5 Credential Exposure
 
 Whether credentials (API keys, tokens, passwords) are exposed to the model
 or agent context during execution.
 
-- `expose_to_model`: boolean. When `false`, credentials MUST be injected at
-  the runtime/tool layer without appearing in the model's context window.
-  When `true`, the skill acknowledges that credential material enters the
-  model context, which carries elevated risk.
+- `expose_to_model`: boolean, and in v0.1 MUST be `false`. Credentials MUST
+  be injected at the runtime/tool layer without appearing in the model's
+  context window. A declaration that sets `true` is INVALID.
 
-Skills SHOULD set `expose_to_model: false` unless the capability inherently
-requires the model to read secret material.
+## 4. Typed Effect Categories
 
-## 4. Effect Categories
+SABI recognizes nine effect categories. Each category accepts only the
+constraint keys listed for it; any other key is a typing error. This is what
+makes an envelope *typed* rather than a free-form mapping.
 
-SABI v0.1 recognizes the following effect categories. Each category maps to
-one or more capability families but is evaluated independently:
+| Category | `allowed` | `scope` | `paths` | `branches` | `destinations` | `domains` | `environment` | `max_operations` | `amount` / `currency` |
+|----------|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| `filesystem` | ✓ | ✓ | ✓ | – | – | – | – | ✓ | – |
+| `repository` | ✓ | ✓ | – | ✓ | – | – | – | ✓ | – |
+| `process` | ✓ | ✓ | – | – | – | – | ✓ | ✓ | – |
+| `network` | ✓ | – | – | – | ✓ | ✓ | – | ✓ | – |
+| `message` | ✓ | – | – | – | ✓ | – | – | ✓ | – |
+| `artifact` | ✓ | ✓ | ✓ | – | – | – | – | ✓ | – |
+| `deployment` | ✓ | ✓ | – | – | ✓ | ✓* | ✓ | ✓ | – |
+| `credential` | ✓ | ✓ | – | – | – | – | ✓ | ✓ | – |
+| `money` | ✓ | – | – | – | – | – | – | ✓ | ✓ |
 
-| Category | Description | Key Dimensions |
-|----------|-------------|----------------|
-| `filesystem.write` | Local file creation or mutation | scope, max_operations, reversibility |
-| `filesystem.read` | Local file access | scope |
-| `network.egress` | Outbound network connections | domains, max_operations, visibility |
-| `message.send` | Delivery of messages to platforms | destinations, max_operations, visibility |
-| `money` | Financial transactions or commitments | max_amount, reversibility |
-| `credentials` | Access to or exposure of secrets | expose_to_model |
-| `process.spawn` | Child process creation | scope, max_operations |
+\* `deployment` accepts `destinations` (named targets) and `environment`
+(named deployment environments such as `staging`); `domains` is not part of
+the deployment category and MUST be expressed as `network`.
+
+Per-category constraint semantics:
+
+- **`allowed`** — boolean. Explicitly grants or withholds the category. When
+  absent, `allowed` is implied: `true` if the declaration carries a quantified
+  bound, `false` otherwise. `allowed: true` without any quantified bound is
+  INVALID. `allowed: false` together with non-empty bounds is INVALID
+  (contradictory).
+- **`scope`** — list of path, command, credential-name, or target globs the
+  effect may touch. Empty list means no access.
+- **`paths`** — list of explicit path globs (filesystem/artifact). Where both
+  `paths` and `scope` are declared, the effective path bound is their union.
+- **`branches`** — list of branch globs a repository effect may push to.
+- **`destinations`** — list of named targets (chat, endpoint, cluster).
+- **`domains`** — list of network domains an effect may contact.
+- **`environment`** — list of environment names (variables for `process` and
+  `credential`; named deployment environments for `deployment`).
+- **`max_operations`** — non-negative integer, per invocation.
+- **`amount` / `currency`** — money only; see §3.4.
+- **`expose_to_model`** — credential only; see §3.5.
+- **`note`** — free-text documentation. Permitted on every category and never
+  widens a bound.
+
+The v0.1 dotted names (`filesystem.read`, `filesystem.write`,
+`repository.push`, `process.spawn`, `network.egress`, `message.send`,
+`artifact.create`, `deployment.create`, `credentials`) remain valid aliases
+and map onto the canonical categories above. Exactly one entry per canonical
+category is permitted; declaring an alias and its canonical name together is
+a duplicate-category error.
 
 Additional categories MAY be defined via spec extension (MINOR bump).
 
@@ -161,11 +207,39 @@ Note: Real chat identifiers, user identifiers, or personal data MUST NOT
 appear in effect declarations. Use placeholder values such as
 `FIXTURE_CHAT_ID` for specification examples and test fixtures.
 
-## 6. Enforcement Responsibility
+## 6. Envelope Containment — Widening Is Rejected
+
+A declared envelope may itself be constrained by an enclosing envelope
+(policy, binding, or a narrower mission scope). The inner envelope MUST be
+contained in the outer envelope:
+
+> **inner ⊆ outer. Any widening is a violation.**
+
+Containment is checked dimension by dimension, conservatively:
+
+| Dimension | Containment rule |
+|-----------|------------------|
+| category | An inner category absent from the outer envelope is widening. |
+| `allowed` | Inner `true` while outer is not `true` is widening. |
+| `max_operations` | Inner greater than outer is widening. Undeclared outer defaults to `0`. |
+| `scope`, `paths`, `branches`, `destinations`, `domains`, `environment` | Every inner entry MUST be glob-covered by an outer entry. A pattern the check cannot prove to be covered is rejected. |
+| `amount` | Inner greater than outer is widening. |
+| `currency` | Inner currency differing from the outer currency is widening. |
+| `expose_to_model` | Inner `true` while outer is not `true` is widening. |
+
+A vacuous inner declaration (all bounds empty, `allowed` not `true`) is
+contained by anything: declaring that an effect will not occur never widens.
+
+Symmetrically, an observed effect record MUST be contained in its declared
+envelope. Undeclared-but-zero observations are clean; undeclared non-zero
+observations are violations.
+
+## 7. Enforcement Responsibility
 
 | Actor | Responsibility |
 |-------|---------------|
 | Skill author | Declare accurate, complete effect bounds |
+| SABI (this spec, schema, checker) | Define the semantic bound; decide typing, quantification, and containment |
 | Runtime | Enforce declared bounds at execution time; block or halt on violation |
 | Binding record | Map abstract effect categories to concrete enforcement mechanisms |
 | Verification stage | Prove that enforcement was exercised (P4+) |
@@ -173,23 +247,26 @@ appear in effect declarations. Use placeholder values such as
 
 No single actor bears sole responsibility. The effect model distributes
 enforcement across authoring, binding, execution, and verification layers.
+Enforcement mechanisms are provider-specific and MUST NOT be encoded in the
+SABI ABI.
 
-## 7. Relationship to Capabilities
+## 8. Relationship to Capabilities
 
 Capabilities (C) describe what a skill needs; effects (E) describe what a
 skill does. A skill may require `shell.execute` (capability) but declare
-zero `process.spawn` effects if it only runs read-only commands. Conversely,
-a skill with `message.send` effects MUST require the corresponding `message.*`
+zero `process` effects if it only runs read-only commands. Conversely,
+a skill with `message` effects MUST require the corresponding `message.*`
 capability.
 
 Verification MUST check that every declared effect category has a
 corresponding required or optional capability. Undeclared capabilities with
 declared effects indicate incomplete contracts.
 
-## 8. Grounding Note
+## 9. Grounding Note
 
 The reference skill `telegram-live-status` demonstrates minimal effects:
 one message send to a fixture destination, zero filesystem writes, zero
 network egress, zero financial operations, and no credential exposure to
 the model. This represents a tightly bounded effect profile suitable for
-high-conformance attestation.
+high-conformance attestation. `conformance/effect-vectors.yaml` carries the
+normative accept/reject vectors, including the widening-rejection vectors.
