@@ -3,7 +3,6 @@
 Each schema rejects bad docs, accepts the telegram-live-status example,
 and missing schema files degrade gracefully (no crash).
 """
-import json
 import shutil
 import sys
 from pathlib import Path

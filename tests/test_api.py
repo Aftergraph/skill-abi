@@ -1,6 +1,5 @@
 """Self-contained tests for the cross-repo requirement-object export API."""
 import json
-import pytest
 from pathlib import Path
 
 from sabi.api import (
