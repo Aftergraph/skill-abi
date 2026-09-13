@@ -16,13 +16,12 @@ import json
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
-from sabi.canon import canonical_json, digest_file_uri, sha256_file
+from sabi.canon import canonical_json, digest_file_uri
 from sabi.certify import build_certificate
-from sabi.errors import IntegrityError, SabiError, ValidationError
-from sabi.lockfile import check_lock, compute_digests, locked_files, write_lock as _write_lock
+from sabi.errors import IntegrityError
+from sabi.lockfile import compute_digests, write_lock as _write_lock
 from sabi.parser import load_manifest, parse_abi_yaml
 from sabi.resolver import resolve_tier
-from sabi import schema as json_schema
 
 
 # ── requirement-object export seam (Team G, preserved) ──────────────
