@@ -6,7 +6,6 @@ updates:
       interval: "daily"
     allow:
       - dependency-name: "pyyaml"
-      - dependency-name: "cryptography"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
