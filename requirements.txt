@@ -1,3 +1,2 @@
 # Python runtime dependencies, exact-pinned for supply-chain reproducibility.
 pyyaml==6.0.2
-cryptography==44.0.2
