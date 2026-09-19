@@ -7,6 +7,9 @@ from __future__ import annotations
 
 from sabi.errors import IntegrityError, SabiError, ValidationError
 
+# Canonical implementation version consumed by the README drift gate.
+__version__ = "0.1.0"
+
 __all__ = [
     "validate_skill",
     "resolve",
