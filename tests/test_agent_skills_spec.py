@@ -194,6 +194,11 @@ def test_optional_compatibility_over_500_rejected(tmp_path):
     assert any("exceeds 500" in e for e in findings(errors)), errors
 
 
+def test_optional_compatibility_empty_rejected(tmp_path):
+    _, errors = check(tmp_path, "demo-skill", fm(extra='compatibility: ""'))
+    assert any("1-500 characters" in e for e in findings(errors)), errors
+
+
 def test_optional_compatibility_wrong_type_rejected(tmp_path):
     _, errors = check(tmp_path, "demo-skill", fm(extra="compatibility: [a, b]"))
     assert any("compatibility" in e for e in findings(errors)), errors
