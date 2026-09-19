@@ -96,6 +96,8 @@ def check_optional_fields(frontmatter):
         comp = frontmatter["compatibility"]
         if not isinstance(comp, str):
             errors.append("'compatibility' must be a string")
+        elif not comp:
+            errors.append("'compatibility' must be 1-500 characters when provided")
         elif len(comp) > MAX_COMPATIBILITY_LENGTH:
             errors.append(
                 f"compatibility exceeds {MAX_COMPATIBILITY_LENGTH} characters "
