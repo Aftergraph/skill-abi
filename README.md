@@ -65,6 +65,24 @@ schema references, effect and degradation declarations, and lockfile
 integrity. `VALID` means the canonical validator returned no findings.
 
 
+
+## Release provenance
+
+Tagged/manual release builds create `release-artifacts/source.tar.gz`, retain its
+SHA-256 sidecar as a convenience integrity check, and generate GitHub-native
+signed build provenance for the archive with `actions/attest`.
+
+After obtaining `source.tar.gz`, verify the attestation against this repository:
+
+```bash
+gh attestation verify source.tar.gz --repo Aftergraph/skill-abi
+```
+
+The `.sha256` sidecar is **not** provenance. A GitHub artifact attestation is
+also not, by itself, an Aftergraph claim of any SLSA level; any such claim
+requires an explicit mapping to the applicable SLSA specification and observed
+release evidence.
+
 ## Status
 
 > Mechanically checkable: `python scripts/check_readme_drift.py` verifies every

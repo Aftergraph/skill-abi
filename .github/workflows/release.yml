@@ -47,6 +47,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      id-token: write
+      attestations: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -56,6 +58,10 @@ jobs:
           mkdir -p release-artifacts
           git archive --format=tar.gz -o release-artifacts/source.tar.gz HEAD
           sha256sum release-artifacts/source.tar.gz > release-artifacts/source.tar.gz.sha256
+      - name: attest source archive
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4
+        with:
+          subject-path: release-artifacts/source.tar.gz
       - name: upload release artifacts
         uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
         with:
