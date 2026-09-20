@@ -13,6 +13,19 @@ invalid portability claim.
 
 ## Requirement object (`sabi/requirement-object/v0.1`)
 
+The `schema` field MUST be exactly `sabi/requirement-object/v0.1`.
+The JSON Schema that validates the carrier lives at
+`schemas/requirement-object.schema.json` under the canonical
+`https://aftergraph.org/sabi/` schema namespace.
+
+The historical implementation briefly emitted
+`https://sabi.dev/schemas/requirement-object.json` and wrapped
+`verification_obligations` as an object. That shape is retired from the
+canonical export. It remains available only through the explicit
+`export_requirement_object_legacy()` compatibility function and MUST NOT be
+used for new cross-repository integrations.
+
+
 Exported by `src/sabi/api.py::export_requirement_object(skill_dir)`.
 
 | Field | Type | Source |
