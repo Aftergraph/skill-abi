@@ -7,6 +7,8 @@ from sabi.api import (
     export_requirement_object,
     requirement_object_bytes,
     REQUIREMENT_OBJECT_SCHEMA,
+    LEGACY_REQUIREMENT_OBJECT_SCHEMA,
+    export_requirement_object_legacy,
 )
 
 
@@ -24,6 +26,32 @@ class TestRequirementObjectShape:
             "digests", "required_capabilities", "optional_capabilities",
             "effect_envelope", "degradation_tiers", "verification_obligations",
         }
+
+    def test_schema_id_is_canonical_contract_id(self, tmp_path):
+        skill = _make_skill(tmp_path)
+        obj = export_requirement_object(skill)
+        assert REQUIREMENT_OBJECT_SCHEMA == "sabi/requirement-object/v0.1"
+        assert obj["schema"] == "sabi/requirement-object/v0.1"
+
+    def test_verification_obligations_are_exported_as_ordered_list(self, tmp_path):
+        skill = _make_skill(tmp_path)
+        obj = export_requirement_object(skill)
+        assert obj["verification_obligations"] == ["verify.noop"]
+
+    def test_requirement_object_validates_against_canonical_json_schema(self, tmp_path):
+        from sabi import schema as js
+
+        skill = _make_skill(tmp_path)
+        obj = export_requirement_object(skill)
+        schema_path = Path(__file__).resolve().parents[1] / "schemas" / "requirement-object.schema.json"
+        schema = json.loads(schema_path.read_text(encoding="utf-8"))
+        assert js.validate(obj, schema) == []
+
+    def test_legacy_export_requires_explicit_opt_in(self, tmp_path):
+        skill = _make_skill(tmp_path)
+        obj = export_requirement_object_legacy(skill)
+        assert obj["schema"] == LEGACY_REQUIREMENT_OBJECT_SCHEMA
+        assert obj["verification_obligations"] == {"required": ["verify.noop"]}
 
     def test_degradation_tiers_ordered(self, tmp_path):
         skill = _make_skill(tmp_path, degradation_tiers=["full", "reject"])

@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aftergraph.org/sabi/requirement-object.schema.json",
+  "title": "SABI requirement object v0.1",
+  "description": "Derived cross-repository requirement object. skill-abi remains the source of truth; consumers may validate but must not author or reinterpret this object as authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "skill",
+    "version",
+    "spec",
+    "digests",
+    "required_capabilities",
+    "optional_capabilities",
+    "effect_envelope",
+    "degradation_tiers",
+    "verification_obligations"
+  ],
+  "properties": {
+    "schema": {
+      "const": "sabi/requirement-object/v0.1"
+    },
+    "skill": {
+      "type": "string",
+      "minLength": 1
+    },
+    "version": {
+      "type": "string"
+    },
+    "spec": {
+      "type": "string",
+      "pattern": "^sabi/v"
+    },
+    "digests": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["skill_md", "abi"],
+      "properties": {
+        "skill_md": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        },
+        "abi": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        }
+      }
+    },
+    "required_capabilities": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "optional_capabilities": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "effect_envelope": {
+      "type": "object"
+    },
+    "degradation_tiers": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "verification_obligations": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  }
+}

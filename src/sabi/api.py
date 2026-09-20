@@ -27,7 +27,8 @@ from sabi import schema as json_schema
 
 # ── requirement-object export seam (Team G, preserved) ──────────────
 
-REQUIREMENT_OBJECT_SCHEMA = "https://sabi.dev/schemas/requirement-object.json"
+REQUIREMENT_OBJECT_SCHEMA = "sabi/requirement-object/v0.1"
+LEGACY_REQUIREMENT_OBJECT_SCHEMA = "https://sabi.dev/schemas/requirement-object.json"
 
 
 def export_requirement_object(skill_dir: Path) -> Dict[str, Any]:
@@ -70,8 +71,10 @@ def export_requirement_object(skill_dir: Path) -> Dict[str, Any]:
         tiers = doc.get("degradation", {})
         degradation_tiers = list(tiers.keys())
 
-    # Verification obligations
-    verification_obligations = abi.get("verification", {})
+    # Verification obligations: the cross-repo contract exports the ordered
+    # list under verification.required, not the ABI wrapper object.
+    verification = abi.get("verification", {}) or {}
+    verification_obligations = verification.get("required", []) or []
 
     return {
         "schema": REQUIREMENT_OBJECT_SCHEMA,
@@ -86,6 +89,20 @@ def export_requirement_object(skill_dir: Path) -> Dict[str, Any]:
         "verification_obligations": verification_obligations,
     }
 
+
+
+def export_requirement_object_legacy(skill_dir: Path) -> Dict[str, Any]:
+    """Compatibility export for the pre-canonical requirement-object shape.
+
+    The legacy export is retained only for consumers that explicitly opt in.
+    New consumers MUST use :func:`export_requirement_object`, whose schema id
+    and verification_obligations shape match spec/cross-repo-contract.md.
+    """
+    obj = export_requirement_object(skill_dir)
+    abi = parse_abi_yaml(Path(skill_dir) / "skill.abi.yaml")
+    obj["schema"] = LEGACY_REQUIREMENT_OBJECT_SCHEMA
+    obj["verification_obligations"] = abi.get("verification", {}) or {}
+    return obj
 
 def requirement_object_bytes(skill_dir: Path) -> bytes:
     """Return canonical JSON bytes of the requirement object."""
