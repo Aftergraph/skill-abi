@@ -4,6 +4,12 @@
 - H-003 closed: skill-md + abi schemas live, validator branches active, schema tests
 
 ## Unreleased
+- Cross-repo requirement-object export now matches its normative contract:
+  `schema == "sabi/requirement-object/v0.1"`,
+  `verification_obligations` is an ordered string array, and
+  `schemas/requirement-object.schema.json` validates the carrier.
+  The retired `sabi.dev` shape remains only behind explicit
+  `export_requirement_object_legacy()` compatibility.
 - Schema consolidation: `schemas/abi.schema.json` is the single canonical
   ABI-descriptor schema; the unreferenced duplicate
   `schemas/skill-abi.schema.json` is removed (its `conformance.level`
