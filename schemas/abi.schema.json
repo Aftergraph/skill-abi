@@ -6,7 +6,11 @@
   "$comment": "Canonical ABI descriptor schema. Read by src/sabi/validator.py (P1) and tests/test_schemas.py, tests/test_validator_schemas.py. Namespace: aftergraph.org/sabi. See spec/schema-family.md.",
   "type": "object",
   "additionalProperties": true,
-  "required": ["spec", "skill", "capabilities"],
+  "required": [
+    "spec",
+    "skill",
+    "capabilities"
+  ],
   "properties": {
     "spec": {
       "type": "string",
@@ -22,30 +26,44 @@
     "capabilities": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["required"],
+      "required": [
+        "required"
+      ],
       "properties": {
         "required": {
           "type": "array",
-          "items": {"type": "string"}
+          "items": {
+            "type": "string"
+          }
         },
         "optional": {
           "type": "array",
-          "items": {"type": "string"}
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
     "inputs": {
       "type": "object",
-      "required": ["schema"],
+      "required": [
+        "schema"
+      ],
       "properties": {
-        "schema": {"type": "string"}
+        "schema": {
+          "type": "string"
+        }
       }
     },
     "outputs": {
       "type": "object",
-      "required": ["schema"],
+      "required": [
+        "schema"
+      ],
       "properties": {
-        "schema": {"type": "string"}
+        "schema": {
+          "type": "string"
+        }
       }
     },
     "verification": {
@@ -53,7 +71,9 @@
       "properties": {
         "required": {
           "type": "array",
-          "items": {"type": "string"}
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -62,13 +82,75 @@
       "properties": {
         "level": {
           "type": "string",
-          "enum": ["P0", "P1", "P2", "P3", "P4", "P4M", "P5"]
+          "enum": [
+            "P0",
+            "P1",
+            "P2",
+            "P3",
+            "P4",
+            "P4M",
+            "P5"
+          ]
         },
-        "spec_version": {"type": "string"},
-        "evidence_ref": {"type": "string"}
+        "spec_version": {
+          "type": "string"
+        },
+        "evidence_ref": {
+          "type": "string"
+        }
       }
     },
-    "effects_ref": {"type": "string"},
-    "degradation_ref": {"type": "string"}
+    "effects_ref": {
+      "type": "string"
+    },
+    "degradation_ref": {
+      "type": "string"
+    },
+    "tool_bindings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "capability"
+        ],
+        "properties": {
+          "capability": {
+            "type": "string",
+            "minLength": 1
+          },
+          "acceptable_kinds": {
+            "type": "array",
+            "items": {
+              "enum": [
+                "http",
+                "cli",
+                "mcp",
+                "skill",
+                "browser",
+                "computer"
+              ]
+            }
+          },
+          "acceptable_runtimes": {
+            "type": "array",
+            "items": {
+              "enum": [
+                "gateway",
+                "runtime",
+                "relay",
+                "computer-node"
+              ]
+            }
+          },
+          "selector": {
+            "type": "string"
+          },
+          "credential_exposure": {
+            "const": false
+          }
+        }
+      }
+    }
   }
 }
