@@ -124,6 +124,23 @@ def validate_skill(skill_dir, schemas_dir=None, write_lock=False):
         for bad in vocab.unknown(caps):
             errors.append(f"P1: capability {bad!r} not in SABI vocabulary")
 
+    # ToolFabric bindings constrain how a declared capability may be resolved.
+    # They are discovery/routing hints only and MUST NOT grant authority or expose credentials.
+    declared_caps = set((caps_doc.get("required", []) or []) + (caps_doc.get("optional", []) or []))
+    tool_bindings = abi.get("tool_bindings", []) or []
+    if not isinstance(tool_bindings, list):
+        errors.append("P1: tool_bindings must be a list")
+        tool_bindings = []
+    for binding in tool_bindings:
+        if not isinstance(binding, dict):
+            errors.append("P1: each tool_binding must be a mapping")
+            continue
+        cap = str(binding.get("capability", ""))
+        if cap not in declared_caps:
+            errors.append(f"P1: tool_binding capability {cap!r} must be declared in capabilities")
+        if binding.get("credential_exposure") is not False:
+            errors.append(f"P1: tool_binding {cap!r} credential_exposure must be explicitly false")
+
     # inputs/outputs schemas referenced must exist, parse, and validate
     for ref in ("inputs", "outputs"):
         rel = (abi.get(ref, {}) or {}).get("schema")

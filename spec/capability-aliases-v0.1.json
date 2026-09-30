@@ -1,0 +1,21 @@
+{
+  "schema_version": "sabi-capability-aliases/v0.1",
+  "entries": [
+    {
+      "canonical": "browser.navigate",
+      "aliases": ["browser_navigation", "browser navigation"]
+    },
+    {
+      "canonical": "shell.execute",
+      "aliases": ["shell_execution", "shell execution"]
+    },
+    {
+      "canonical": "web.search",
+      "aliases": ["web_search", "web search"]
+    },
+    {
+      "canonical": "repository.read",
+      "aliases": ["repository_read", "repository read"]
+    }
+  ]
+}
