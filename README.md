@@ -7,7 +7,7 @@ capability environments. Core invariant: **Portable != Parseable**.
 ## Quickstart
 
 ```bash
-pip install pyyaml cryptography   # only dependencies
+pip install pyyaml            # only dependency
 python cli/sabi.py validate examples/telegram-live-status
 python cli/sabi.py resolve examples/telegram-live-status --runtime examples/telegram-live-status/bindings/minimal.yaml
 python cli/sabi.py test examples/telegram-live-status --matrix
