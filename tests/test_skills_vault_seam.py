@@ -9,7 +9,6 @@ Tests that:
 """
 import json
 import shutil
-import sys
 from pathlib import Path
 
 import pytest
@@ -32,7 +31,6 @@ def vault():
     the current runtime (e.g. KW_ONLY dataclass fields).
     """
     import importlib.util
-    import sys
     spec = importlib.util.spec_from_file_location("vault", VAULT_SCRIPT)
     mod = importlib.util.module_from_spec(spec)
     try:

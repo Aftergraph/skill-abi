@@ -10,11 +10,9 @@ Test structure:
 - library_validate() calls sabi.validator.validate_skill directly
 """
 import json
-import os
 import shutil
 import subprocess
 import sys
-import tempfile
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
